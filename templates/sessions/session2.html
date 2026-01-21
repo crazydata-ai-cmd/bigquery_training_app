@@ -1,0 +1,538 @@
+<section id="session2" class="content-section" style="display:none;">
+
+    <div class="section-header-wrapper">
+        <span class="section-badge">02</span>
+        <h2 class="section-title-large">Ingestion & Query Lifecycle</h2>
+        <p class="section-subtitle">Section 1: Getting Data In and Getting Answers Out</p>
+    </div>
+
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-2-1">2.1 Ingestion</a></li>
+            <li><a href="#section-2-2">2.2 Query Life</a></li>
+            <li><a href="#section-2-3">2.3 Slots</a></li>
+            <li><a href="#section-2-4">2.4 Continuous Queries</a></li>
+            <li><a href="#section-2-5">2.5 Query SQL</a></li>
+            <li><a href="#section-2-6">2.6 Routines</a></li>
+            <li><a href="#section-2-7">2.7 BI Engine</a></li>
+            <li><a href="#section-2-8">2.8 Optimizing Queries</a></li>
+        </ul>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-2-1">2.1 Ingestion Strategies & Batch Loading <a href="#session2"
+                        class="back-to-top">Top &uarr;</a></h3>
+                <p>Ingestion methods impact freshness, cost, and availability. <strong>Batch Loading</strong> is the
+                    most common method for moving large historic data.</p>
+
+                <div class="concept-card">
+                    <h4>Batch Loading Deep Dive (Detailed)</h4>
+                    <p>Batch loading is <strong>Free</strong> (using shared slot pool) and supports loading from Cloud
+                        Storage (GCS) or local files.</p>
+
+                    <h5>Supported Formats & Performance</h5>
+                    <ul>
+                        <li><strong>Avro (Preferred):</strong> Fastest load times. Supports parallel reading even when
+                            compressed (block-level).</li>
+                        <li><strong>Parquet:</strong> Excellent compression and columnar efficiency. Also supports
+                            parallel loading.</li>
+                        <li><strong>CSV / JSON:</strong> Slower. Parsing overhead is high.
+                            <ul>
+                                <li><em>Constraint:</em> <strong>GZIP</strong> compression on CSV/JSON makes files
+                                    non-splittable, preventing parallel loading. Use uncompressed for speed, or GZIP
+                                    only if bandwidth is the bottleneck.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h5 style="margin-top:16px;">Key Features</h5>
+                    <ul>
+                        <li><strong>Wildcards:</strong> Support matching multiple files (e.g.,
+                            <code>gs://my-bucket/logs/2024-01-*.csv</code>).
+                        </li>
+                        <li><strong>Quotas:</strong> Uses a shared "default-pipeline" pool. Capacity is not guaranteed.
+                            For guaranteed throughput, assign <strong>Reserved Slots</strong> to the `PIPELINE` job
+                            type.</li>
+                        <li><strong>Schema:</strong> Supports `Auto-detect` but Production pipelines should enforce
+                            schemas to prevent drift.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #34A853;">
+                    <h4 style="color: #34A853;">Streaming (Storage Write API)</h4>
+                    <p>High-throughput ingestion (GB/s) using <strong>gRPC</strong> and <strong>Protocol
+                            Buffers</strong>.
+                        <br><strong>Cost:</strong> Paid per GB (First 2 TiB/mo free).
+                    </p>
+
+                    <h5 style="margin-top:16px;">Key Concepts</h5>
+                    <ul>
+                        <li><strong>Exactly-Once Semantics:</strong> Achieved using <em>Committed Streams</em> with
+                            offsets, preventing duplicates at the protocol level.</li>
+                        <li><strong>ACID Transactions:</strong> Support for multi-stream transactions (commit all or
+                            nothing).</li>
+                        <li><strong>Stream Types:</strong>
+                            <ul>
+                                <li><strong>Default Stream:</strong> At-least-once, immediate query availability.</li>
+                                <li><strong>Committed Stream:</strong> Exactly-once, immediate availability.</li>
+                                <li><strong>Pending Stream:</strong> Buffered data, atomic commit (Batch-like behavior
+                                    over stream).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Ingestion Methods</h4>
+                    <img src="{{ url_for('static', filename='images/ingestion_methods_comparison_1768817681355.png') }}"
+                        alt="Ingestion Methods Comparison">
+                    <p class="caption">Figure 4: Comparison of Ingestion Methods</p>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="code-example">
+            <h4>Code Example: Batch Load (CLI)</h4>
+            <pre><code class="language-bash"># Load a JSON file into BigQuery
+bq load \
+    --source_format=NEWLINE_DELIMITED_JSON \
+    --autodetect \
+    my_dataset.my_table \
+    ./data.json</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Streaming API (Python)</h4>
+            <pre><code class="language-python">from google.cloud import bigquery
+
+client = bigquery.Client()
+table_id = "my_project.my_dataset.my_table"
+
+rows_to_insert = [
+    {"name": "Phredelphia", "age": 32},
+    {"name": "Wally", "age": 16},
+]
+
+errors = client.insert_rows_json(table_id, rows_to_insert)
+if errors == []:
+    print("New rows have been added.")
+else:
+    print("Encountered errors: {}".format(errors))</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-2-2">2.2 The Life of a Query <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+                <p>Understanding the Query Execution Graph is key to performance.</p>
+                <ul>
+                    <li><strong>Shuffle:</strong> The "Shuffle Bottleneck" occurs when the Shuffle
+                        Tier
+                        lacks quota to exchange data between workers.</li>
+                    <li><strong>Optimization:</strong>
+                        <ul>
+                            <li><strong>Filter Early:</strong> Reduce data <em>before</em> the JOIN.
+                            </li>
+                            <li><strong>Broadcast Joins:</strong> Place small table on RIGHT of
+                                JOIN.</li>
+                            <li><strong>Avoid Self-Joins:</strong> Use Window Functions instead.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Query Execution Graph</h4>
+                    <img src="{{ url_for('static', filename='images/life_of_a_query_flowchart_1768817633667.png') }}"
+                        alt="Life of a Query">
+                    <p class="caption">Figure 5: The Life of a BigQuery Query</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-2-3">2.3 Slots & Concurrency <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+                <p><strong>Slots</strong> are virtual CPUs. "Slot Contention" occurs when demand
+                    exceeds
+                    capacity.</p>
+                <ul>
+                    <li><strong>Avg Slots vs Max Slots:</strong> Query insights show if a query was
+                        limited
+                        by available slots.</li>
+                    <li><strong>Wait Time:</strong> High "Wait" time in execution details indicates
+                        the
+                        query was queued due to slot starvation.</li>
+                </ul>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Slots & Fair Scheduling</h4>
+                    <img src="{{ url_for('static', filename='images/slots_and_concurrency_1768817655127.png') }}"
+                        alt="Slots and Concurrency">
+                    <p class="caption">Figure 6: Slots and Fair Scheduling</p>
+                </div>
+            </div>
+
+
+            <div class="code-example">
+                <h4>Monitoring Slots</h4>
+                <pre><code class="language-sql">SELECT
+  job_id,
+  total_slot_ms,
+  total_bytes_billed
+FROM
+  `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE
+  creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
+ORDER BY
+  total_slot_ms DESC
+LIMIT 5</code></pre>
+            </div>
+        </div>
+
+        <div class="topic-block">
+            <h3 id="section-2-4">2.4 Continuous Queries <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <p><strong>Continuous Queries</strong> allow you to analyze and act on incoming data in
+                real-time. Unlike scheduled queries, they run continuously, processing data as it
+                arrives.</p>
+            <ul>
+                <li><strong>Event-Driven Patterns:</strong> Trigger downstream applications via <strong>Pub/Sub</strong>
+                    or update fast serving layers like <strong>Bigtable</strong> and <strong>Spanner</strong>.</li>
+                <li><strong>Real-Time AI:</strong> Apply ML models (e.g., <code>AI.GENERATE_TEXT</code>) to data
+                    in-flight.
+                </li>
+            </ul>
+            <div class="code-example">
+                <h4>Code Example: Continuous Query (Reverse ETL)</h4>
+                <pre><code class="language-sql">-- Continuously analyze transactions and export alerts to Pub/Sub
+-- Triggers downstream apps immediately when fraud is detected.
+CREATE CONTINUOUS QUERY `my_project.realtime.fraud_alert_stream` AS
+EXPORT DATA OPTIONS(format='CLOUD_PUBSUB', uri='https://pubsub.googleapis.com/projects/my_project/topics/alerts')
+AS
+SELECT
+  txn_id,
+  amount,
+  ml_score,
+  CURRENT_TIMESTAMP() as alert_time
+FROM `my_project.stream.transactions`
+WHERE ml_score > 0.9;</code></pre>
+            </div>
+        </div>
+
+        <div class="topic-block">
+            <h3 id="section-2-5">2.5 Query Data with SQL <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <p>BigQuery supports GoogleSQL (Standard SQL 2011). Key constructs for data analysis
+                include:</p>
+            <ul>
+                <li><strong>SELECT & JOIN:</strong> Standard filtering and joining.</li>
+                <li><strong>UNNEST:</strong> Flatten arrays for analysis.</li>
+                <li><strong>WINDOW FUNCTIONS:</strong> Compute moving averages or ranks.</li>
+            </ul>
+            <div class="code-example">
+                <h4>Code Example: Analytical Query</h4>
+                <pre><code class="language-sql">-- Calculate running total of duration by station
+SELECT
+  start_station_name,
+  start_time,
+  duration_minutes,
+  SUM(duration_minutes) OVER (PARTITION BY start_station_name ORDER BY start_time) as running_total_duration
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+WHERE start_time >= '2023-10-01'
+LIMIT 100</code></pre>
+            </div>
+
+            <div class="code-example">
+                <h4>Code Example: Window Functions (Rank & Lead)</h4>
+                <pre><code class="language-sql">-- Analyze trip durations and compare with the next trip
+SELECT
+  start_station_name,
+  start_time,
+  duration_minutes,
+  -- Rank trips by duration
+  RANK() OVER (PARTITION BY start_station_name ORDER BY duration_minutes DESC) as rank_by_duration,
+  -- Compare with next trip's duration
+  LEAD(duration_minutes) OVER (PARTITION BY start_station_name ORDER BY start_time) as next_trip_duration
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+WHERE start_time >= '2023-10-01'
+LIMIT 100</code></pre>
+            </div>
+
+            <div class="concept-card" style="margin-top: 16px;">
+                <h4>Understanding Window Functions</h4>
+                <p>Window functions perform calculations across a set of table rows that are related to the current row.
+                </p>
+                <ul>
+                    <li><strong>RANK():</strong> Assigns a rank to each row within a partition. Useful for finding "Top
+                        N" items per category.</li>
+                    <li><strong>LEAD():</strong> Accesses data from a subsequent row without a self-join. Ideal for
+                        calculating deltas (e.g., time between events).</li>
+                    <li><strong>PARTITION BY:</strong> Divides the result set into partitions (like
+                        <code>GROUP BY</code>) but keeps individual rows.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="topic-block">
+            <h3 id="section-2-6">2.6 Routines & Scripting <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <p><strong>Routines</strong> allow you to encapsulate logic, automate workflows, and extend SQL
+                capabilities.</p>
+            <div class="content-split">
+                <div class="text-col">
+                    <div class="concept-card">
+                        <h4>Types of Routines</h4>
+                        <ul>
+                            <li><strong>User-Defined Functions (UDFs):</strong> Extend SQL with logic written in SQL or
+                                <strong>JavaScript</strong>. Great for complex parsing or math.
+                            </li>
+                            <li><strong>Table Functions (TVFs):</strong> Like parameterized views. Return a table based
+                                on input arguments.</li>
+                            <li><strong>Stored Procedures:</strong> Scripting blocks for automation. Can contain
+                                multiple statements, variables, and control flow (`IF`, `WHILE`).</li>
+                            <li><strong>Remote Functions:</strong> Call external Cloud Functions (Python, Go, Java)
+                                directly from SQL.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+                <h4>Code Example: Remote Function (SQL + Python)</h4>
+                <p><strong>Use Case:</strong> Enrich your data by calling external APIs or proprietary logic (e.g.,
+                    legacy systems, complex math libraries) directly from your SQL queries, without building a separate
+                    ETL pipeline.</p>
+
+                <p style="margin-top: 12px;"><strong>1. SQL Definition:</strong> Create the function in BigQuery
+                    connecting to your Cloud
+                    Function.</p>
+                <pre><code class="language-sql">-- 1. Create the function
+CREATE OR REPLACE FUNCTION `my_project.my_dataset.augment_data`(product_name STRING)
+RETURNS STRING
+-- 2. Bind to an External Connection (created in IAM)
+REMOTE WITH CONNECTION `my_project.us.my_connection`
+OPTIONS (
+  -- 3. Point to the Cloud Function URL
+  endpoint = 'https://us-central1-my_project.cloudfunctions.net/augment_product_info'
+);
+
+-- Usage:
+SELECT product_name, `my_project.my_dataset.augment_data`(product_name) as augmented_info
+FROM `my_project.my_dataset.products`;</code></pre>
+
+                <p style="margin-top: 16px;"><strong>2. Python Cloud Function:</strong> The backend logic.</p>
+                <pre><code class="language-python">import functions_framework
+
+@functions_framework.http
+def augment_product_info(request):
+    # 1. Parse the request from BigQuery
+    # The payload is always a JSON object with a 'calls' array.
+    request_json = request.get_json()
+    calls = request_json['calls']
+    replies = []
+
+    # 2. Iterate through each row (batch) sent by BigQuery
+    for call in calls:
+        # 'call' is a list of arguments for one row (e.g., [product_name])
+        product_name = call[0]
+        
+        # 3. Perform external lookup or complex logic
+        augmented_info = f"{product_name} - Enriched via API"
+        
+        # 4. Append result to replies. Must match the input order.
+        replies.append(augmented_info)
+
+    # 5. Return the list of replies wrapped in a JSON object
+    return {'replies': replies}</code></pre>
+            </div>
+
+            <div class="code-example">
+                <h4>Code Example: SQL UDF (Scalar)</h4>
+                <pre><code class="language-sql">-- User Defined Function to convert minutes to hours
+CREATE OR REPLACE FUNCTION `my_dataset.minutes_to_hours`(minutes INT64)
+RETURNS FLOAT64 AS (
+  minutes / 60.0
+);
+
+-- Use it in a query
+SELECT 
+  duration_minutes, 
+  `my_dataset.minutes_to_hours`(duration_minutes) as duration_hours
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+LIMIT 10;</code></pre>
+            </div>
+
+            <div class="code-example">
+                <h4>Code Example: Stored Procedure (Scripting)</h4>
+                <pre><code class="language-sql">CREATE OR REPLACE PROCEDURE `my_dataset.daily_etl`()
+BEGIN
+  -- 1. Declare variables
+  DECLARE target_date DATE DEFAULT CURRENT_DATE();
+
+  -- 2. Run multiple steps
+  INSERT INTO `my_dataset.daily_summary`
+  SELECT * FROM `my_dataset.raw_logs` WHERE date = target_date;
+
+  -- 3. Log completion
+  SELECT 'ETL Completed' as status;
+END;</code></pre>
+            </div>
+        </div>
+
+        <div class="topic-block">
+            <!-- 2.7 BI Engine -->
+            <div class="section-header-wrapper">
+                <div class="section-badge">Optimization</div>
+                <h2 class="section-title-large" id="section-2-7"
+                    style="display:flex; justify-content:space-between; align-items:center;">2.7 BI Engine & Smart
+                    Caching <a href="#session2" class="back-to-top">Top &uarr;</a></h2>
+                <p class="section-subtitle">Sub-second query response with intelligent in-memory
+                    analysis.</p>
+            </div>
+
+            <div class="content-split">
+                <div class="text-col">
+                    <p><strong>BigQuery BI Engine</strong> is a fast, in-memory analysis service. It
+                        accelerates SQL queries by caching the data you use most frequently.</p>
+
+                    <div class="concept-card">
+                        <h4>Key Capabilities</h4>
+                        <ul>
+                            <li><strong>Sub-second Latency:</strong> Designed to serve dashboards (Looker Studio,
+                                Tableau, Power BI) instantly.</li>
+                            <li><strong>Any SQL Interface:</strong> Accelerates queries from API, JDBC/ODBC, or Console.
+                            </li>
+                            <li><strong>Smart Cache:</strong> Automatically manages hot data, or use <strong>Preferred
+                                    Tables</strong> to pin critical datasets.</li>
+                            <li><strong>Vectorized Runtime:</strong> Uses modern CPU architecture to process batches of
+                                data efficiently.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card tech-card">
+                    <h4>BI Engine High-Level Architecture</h4>
+                    <div class="illustration-container">
+                        <img src="{{ url_for('static', filename='images/bi_engine_architecture.png') }}"
+                            alt="BI Engine Architecture Diagram" class="zoomable-image">
+                        <p class="caption">Figure 2.7: BI Engine sits between the Compute and
+                            Storage layers, intercepting queries for acceleration.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="concept-card" style="background: #FFF8E1; border-color: #FFA000;">
+                <h4 style="color: #F57C00;">Strategy: Optimization & Limitations</h4>
+                <div class="content-split" style="margin-bottom: 0;">
+                    <div>
+                        <h5>✅ Best For</h5>
+                        <ul>
+                            <li><strong>High-Visibility Dashboards:</strong> Powering executive
+                                interactives with low latency.</li>
+                            <li><strong>Pre-Aggregated Data:</strong> Works best with smaller, clean
+                                datasets (fact tables).</li>
+                            <li><strong>Preferred Tables:</strong> Pinning specific critical tables
+                                to memory.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5>⚠️ Limitations</h5>
+                        <ul>
+                            <li><strong>Wildcards:</strong> Does <strong>not</strong> support
+                                wildcard table queries.</li>
+                            <li><strong>JSON Columns:</strong> JSON data types are not accelerated.</li>
+                            <li><strong>UDFs:</strong> Non-SQL User Defined Functions are not
+                                supported.</li>
+                            <li><strong>Complex Joins:</strong> Works best on flattened data. Use Materialized Views to
+                                pre-join starschemas.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+                <h4>Monitoring BI Capacity</h4>
+                <p>Use the Information Schema to track memory usage and spillover.</p>
+                <pre><code class="language-sql">-- Check your BI Engine capacity and usage
+SELECT
+  project_id,
+  user_email,
+  reservation_id,
+  capacity_assigned,
+  capacity_used
+FROM
+  `region-us`.INFORMATION_SCHEMA.BI_CAPACITIES;
+
+-- See what changes are happening
+SELECT * FROM `region-us`.INFORMATION_SCHEMA.BI_CAPACITY_CHANGES
+LIMIT 10;</code></pre>
+            </div>
+        </div>
+
+        <!-- 2.8 Optimizing Queries -->
+        <div class="topic-block">
+            <h3 id="section-2-8">2.8 Optimizing Queries <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <p>Optimizing your queries reduces data scanned and slot time, directly lowering costs and improving speed.
+            </p>
+
+            <div class="content-split">
+                <div class="text-col">
+                    <div class="concept-card">
+                        <h4>Optimization Checklist</h4>
+                        <ul>
+                            <li><strong>Select Carefully:</strong> Never use `SELECT *`. It scans every column, costing
+                                more. Select only what you need.</li>
+                            <li><strong>Filter Early:</strong> Apply filters (`WHERE`) before `JOIN`s to reduce the
+                                amount
+                                of data shuffled.</li>
+                            <li><strong>Partition & Cluster:</strong> Filter on Partition columns first, then Cluster
+                                columns to prune data scanning.</li>
+                            <li><strong>Approximate:</strong> Use `APPROX_COUNT_DISTINCT()` instead of `COUNT(DISTINCT)`
+                                for massive datasets (much faster, <1% error).</li>
+                            <li><strong>Order By:</strong> Avoid `ORDER BY` on huge result sets unless necessary. It
+                                forces a single worker to sort the final output.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="visual-col">
+                    <div class="tech-card">
+                        <h4>Best Practices</h4>
+                        <img src="{{ url_for('static', filename='images/query_optimization_checklist_1768921907627.png') }}"
+                            alt="Query Optimization Checklist" class="zoomable-image">
+                        <p class="caption">Figure 2.8: Query Optimization Best Practices</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-split" style="margin-top:24px;">
+                <div class="card">
+                    <h4 style="margin-top:0;">❌ Costly Query</h4>
+                    <div class="code-example" style="margin-bottom:0;">
+                        <pre><code class="language-sql">-- Scans ALL columns and ALL dates
+SELECT * 
+FROM `bigquery-public-data.github_repos.commits`
+ORDER BY committer.date DESC;</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top:0;">✅ Optimized Query</h4>
+                    <div class="code-example" style="margin-bottom:0;">
+                        <pre><code class="language-sql">-- Scans only needed columns & filtered partition
+SELECT committer.name, committer.date
+FROM `bigquery-public-data.github_repos.commits`
+WHERE date(committer.date) >= '2023-01-01' -- Partition Filter
+ORDER BY committer.date DESC
+LIMIT 100; -- Limiting output</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+</section>

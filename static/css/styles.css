@@ -7,14 +7,183 @@
     --shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
     --sidebar-width: 280px;
     --header-height: 60px;
+    /* New Design System */
+    --tech-dark-bg: #1A1F2C;
+    --tech-card-bg: #2D3342;
+    /* Concept dark card */
+    --accent-purple: #6200EA;
+    --accent-blue: #2962FF;
+    --concept-bg: #E8F0FE;
+    --concept-border: #1967D2;
 }
+
+/* Content Overview (TOC) */
+.content-overview {
+    background: #fff;
+    padding: 24px;
+    border-radius: 16px;
+    margin-bottom: 40px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e0e0e0;
+}
+
+.content-overview h4 {
+    margin: 0 0 16px 0;
+    font-size: 0.9rem;
+    color: #5f6368;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 700;
+}
+
+.content-overview ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.content-overview li a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border-radius: 24px;
+    border: 1px solid #e8eaed;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.content-overview li a:hover {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+/* New Layout Components */
+.section-header-wrapper {
+    margin-bottom: 40px;
+    background: #fff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.section-badge {
+    background: var(--accent-purple);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    display: inline-block;
+    margin-bottom: 16px;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+}
+
+.section-title-large {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #202124;
+    margin: 0 0 8px 0;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    color: #5f6368;
+    margin: 0;
+}
+
+.content-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    margin-bottom: 60px;
+}
+
+.text-col p {
+    font-size: 1.6rem;
+    /* Increased for presentation mode */
+    line-height: 1.6;
+    color: #202124;
+}
+
+.text-col ul {
+    font-size: 1.5rem;
+    /* Increased for presentation mode */
+    line-height: 1.6;
+}
+
+.tech-card {
+    background: #fff;
+    color: var(--text-color);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--accent-blue);
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+}
+
+.tech-card h4 {
+    color: var(--accent-blue);
+    margin-top: 0;
+    font-size: 1.2rem;
+    margin-bottom: 24px;
+    font-weight: 700;
+}
+
+.tech-card img {
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.concept-card {
+    background: var(--concept-bg);
+    border-left: 6px solid var(--concept-border);
+    padding: 24px;
+    border-radius: 0 8px 8px 0;
+    margin: 24px 0;
+}
+
+.concept-card h4 {
+    color: var(--concept-border);
+    margin-top: 0;
+    font-weight: 700;
+}
+
+.concept-card p,
+.concept-card ul,
+.concept-card li {
+    font-size: 1.1rem !important;
+    /* Override the large presentation text */
+    line-height: 1.5;
+}
+
+/* Responsive adjust for split */
+@media (max-width: 1024px) {
+    .content-split {
+        grid-template-columns: 1fr;
+    }
+}
+
 
 * {
     box-sizing: border-box;
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Google Sans', 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
     background-color: var(--bg-color);
@@ -39,7 +208,8 @@ body {
     display: flex;
     flex-direction: column;
     transition: margin-left 0.3s ease-in-out;
-    z-index: 100;
+    z-index: 1000;
+    /* Boost z-index to avoid overlap */
     flex-shrink: 0;
 }
 
@@ -59,8 +229,18 @@ body {
 
 .sidebar-header h3 {
     margin: 0;
-    font-size: 1.2rem;
-    color: var(--primary-color);
+    font-size: 1.5rem;
+    /* Larger Text */
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    /* Ensuring specific font */
+    font-weight: 700;
+    background: linear-gradient(45deg, #4285F4, #34A853);
+    /* Gradient Color */
+    -webkit-background-clip: text;
+    background-clip: text;
+    /* Standard property */
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.5px;
 }
 
 .nav-links {
@@ -79,27 +259,59 @@ body {
     color: #5f6368;
 }
 
+/* Robust Cursor Enforcement: Inheritance Pattern */
+/* Standard Navigation Structure */
 .nav-item {
+    display: block;
+    /* Allows anchor to fill */
+    padding: 0;
+    /* Delegate padding to link */
+    margin: 0;
+    transition: background 0.2s;
+    position: relative;
+    z-index: 1001;
+    /* Ensure items sit on top */
+}
+
+.nav-link {
     display: flex;
     align-items: center;
     padding: 12px 24px;
-    cursor: pointer;
-    transition: background 0.2s;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
     color: #5f6368;
+    cursor: pointer !important;
+    /* Force pointer on link */
+    transition: color 0.2s;
 }
 
+/* Force everything inside to handle mouse properly */
+.nav-link * {
+    cursor: pointer !important;
+    pointer-events: auto;
+    /* Ensure elements capture mouse */
+}
+
+/* Hover/Active states target the LI but style the child Link */
 .nav-item:hover {
     background-color: #f1f3f4;
+}
+
+.nav-item:hover .nav-link {
     color: var(--primary-color);
 }
 
 .nav-item.active {
     background-color: #e8f0fe;
+}
+
+.nav-item.active .nav-link {
     color: var(--primary-color);
     font-weight: 500;
 }
 
-.nav-item .material-icons {
+.nav-link .material-icons {
     margin-right: 16px;
     font-size: 20px;
 }
@@ -201,15 +413,40 @@ h2 {
 }
 
 h3 {
-    margin-top: 32px;
-    margin-bottom: 16px;
+    margin-top: 48px;
+    margin-bottom: 20px;
     color: #202124;
+    font-size: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 h4 {
     margin-top: 16px;
     margin-bottom: 8px;
     color: #5f6368;
+    font-size: 1.7rem;
+    /* Explicitly larger than text-col */
+}
+
+/* Back to Top Link */
+.back-to-top {
+    font-size: 0.9rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    background: #e8f0fe;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    opacity: 0.8;
+}
+
+.back-to-top:hover {
+    opacity: 1;
+    background: var(--primary-color);
+    color: white;
 }
 
 p {
@@ -221,6 +458,16 @@ p {
 /* Topic Block */
 .topic-block {
     margin-bottom: 40px;
+}
+
+.topic-block p {
+    font-size: 1.6rem;
+    line-height: 1.6;
+}
+
+.topic-block ul {
+    font-size: 1.5rem;
+    line-height: 1.6;
 }
 
 /* Card Style */
@@ -252,7 +499,9 @@ p {
     border: 1px solid #eee;
 }
 
-.illustration-container img {
+.illustration-container img,
+.tech-card img,
+.zoomable-image {
     max-width: 100%;
     max-height: 60vh;
     /* Constrain height as requested */
@@ -264,7 +513,9 @@ p {
     transition: transform 0.2s;
 }
 
-.illustration-container img:hover {
+.illustration-container img:hover,
+.tech-card img:hover,
+.zoomable-image:hover {
     transform: scale(1.02);
 }
 
@@ -273,6 +524,10 @@ p {
     color: #5f6368;
     margin-top: 12px;
     font-style: italic;
+}
+
+.tech-card .caption {
+    color: #5f6368;
 }
 
 /* Lightbox Styles */
@@ -297,6 +552,15 @@ p {
     max-height: 90vh;
     object-fit: contain;
     animation: zoom 0.3s;
+    transition: transform 0.3s ease;
+    /* Smooth zoom transition */
+    cursor: zoom-in;
+    /* Indicate zoomable */
+}
+
+.lightbox-content.zoomed {
+    transform: scale(2);
+    cursor: zoom-out;
 }
 
 @keyframes zoom {
@@ -343,33 +607,82 @@ p {
     margin: 24px 0;
 }
 
-code {
-    background: #f1f3f4;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9em;
+/* Larger code text for presentation */
+.code-example pre {
+    font-size: 1.1rem !important;
+    /* Prism override */
+    line-height: 1.6 !important;
+    border-radius: 8px !important;
+    margin-top: 0 !important;
+}
+
+/* Ensure Fira Code or nice mono font */
+code,
+pre,
+.token {
+    font-family: 'Fira Code', 'Roboto Mono', 'Consolas', monospace !important;
+}
+
+/* Inline Code */
+:not(pre)>code {
+    background: #e8eaed;
+    /* Lighter background for inline */
     color: #c5221f;
+    /* Reddish inline text */
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
 }
 
-pre {
-    background: #282a36;
-    color: #f8f8f2;
-    padding: 16px;
-    border-radius: 8px;
-    overflow-x: auto;
-    /* Scroll horizontally if needed */
-    font-family: 'Roboto Mono', monospace;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    max-width: 100%;
-    /* Ensure code blocks don't overflow parent */
+/* Prism Overrides if needed to match theme */
+pre[class*="language-"] {
+    background: #282a36 !important;
+    /* Dracula-like bg */
+    text-shadow: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
-pre code {
-    background: none;
-    color: inherit;
-    padding: 0;
+/* Copy Button */
+/* Copy Button */
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #5f6368;
+    /* Solid dark grey background */
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    font-family: 'Roboto', sans-serif;
+    /* UI font, not code font */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    z-index: 10;
+    opacity: 0.9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.copy-btn:hover {
+    background: #4285F4;
+    /* Google Blue on hover */
+    opacity: 1;
+}
+
+.copy-btn.copied {
+    background: #34A853;
+    /* Green Success */
+    color: white;
+}
+
+/* Ensure code-example positions copy button correctly */
+.code-example {
+    position: relative;
+    /* Button will anchor to this */
 }
 
 /* Responsive */
@@ -400,4 +713,101 @@ pre code {
     .content-wrapper {
         padding: 16px;
     }
+}
+
+/* Architecture Diagram Styles */
+.arch-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding: 24px;
+    background: #1A1F2C;
+    /* Matches the dark BG of the image */
+    border-radius: 8px;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.arch-node {
+    background: #2D3342;
+    border: 1px solid #3c4043;
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.arch-node h5 {
+    font-size: 1.25rem;
+    margin: 0 0 4px 0;
+    font-weight: 700;
+}
+
+.arch-node p {
+    color: #9aa0a6;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.arch-node.compute h5 {
+    color: #00E676;
+    /* Green/Teal */
+}
+
+.arch-node.network {
+    background: linear-gradient(90deg, #303F9F, #1A237E);
+    /* Dark Blue/Purple gradient base */
+    border-color: #5C6BC0;
+    padding: 12px;
+    width: 80%;
+    /* Slightly narrower */
+}
+
+.arch-node.network h5 {
+    color: #fff;
+    margin-bottom: 0;
+}
+
+.arch-node.network p {
+    color: #C5CAE9;
+}
+
+.arch-node.storage h5 {
+    color: #FF4081;
+    /* Pink */
+}
+
+.arch-connector {
+    width: 2px;
+    height: 24px;
+    background: #5f6368;
+}
+
+.arch-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.arch-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #00E676;
+    border-radius: 50%;
+}
+
+.arch-sub-box {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 6px 12px;
+    margin-top: 12px;
+    display: inline-block;
+    color: #fff;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }

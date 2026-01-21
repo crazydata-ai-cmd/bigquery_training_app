@@ -75,7 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeBtn = document.getElementsByClassName("close-lightbox")[0];
 
     // Add click event to all images in illustration-container or with 'zoomable-image' class
-    const images = document.querySelectorAll('.illustration-container img, .zoomable-image');
+    // Add click event to all images in illustration-container, tech-card, or with 'zoomable-image' class
+    const images = document.querySelectorAll('.illustration-container img, .tech-card img, .zoomable-image');
     images.forEach(img => {
         img.onclick = function () {
             lightbox.style.display = "block";
@@ -87,17 +88,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Close logic
-    if (closeBtn) {
-        closeBtn.onclick = function () {
-            lightbox.style.display = "none";
+    // Zoom functionality
+    lightboxImg.onclick = function (e) {
+        e.stopPropagation(); // Prevent closing when clicking image
+        if (this.classList.contains('zoomed')) {
+            this.classList.remove('zoomed');
+        } else {
+            // Calculate click position relative to the image
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Set transform origin to the click position
+            this.style.transformOrigin = `${x}px ${y}px`;
+            this.classList.add('zoomed');
         }
+    }
+
+    // Close logic
+    const closeLightbox = () => {
+        lightbox.style.display = "none";
+        lightboxImg.classList.remove('zoomed'); // Reset zoom on close
+        lightboxImg.style.transformOrigin = 'center center'; // Reset origin
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = closeLightbox;
     }
 
     // Close on click outside
     if (lightbox) {
         lightbox.onclick = function (e) {
             if (e.target !== lightboxImg) {
-                lightbox.style.display = "none";
+                closeLightbox();
             }
         }
     }
@@ -106,6 +129,45 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', function (event) {
         if (event.key === "Escape" && lightbox) {
             lightbox.style.display = "none";
+        }
+    });
+
+    // Code Copy Functionality
+    const codeExamples = document.querySelectorAll('.code-example');
+    codeExamples.forEach(example => {
+        // Create container for relative positioning if not already existing
+        // (The .code-example class already exists)
+
+        // Find the pre element
+        const pre = example.querySelector('pre');
+        if (pre) {
+            // Create "Copy" button
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'copy-btn';
+            copyBtn.innerHTML = '<span class="material-icons" style="font-size: 16px;">content_copy</span> Copy';
+
+            copyBtn.addEventListener('click', () => {
+                const code = pre.querySelector('code');
+                const text = code ? code.innerText : pre.innerText;
+
+                navigator.clipboard.writeText(text).then(() => {
+                    // Success feedback
+                    const originalHtml = copyBtn.innerHTML;
+                    copyBtn.innerHTML = '<span class="material-icons" style="font-size: 16px;">check</span> Copied!';
+                    copyBtn.classList.add('copied');
+
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalHtml;
+                        copyBtn.classList.remove('copied');
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            });
+
+            // Make sure the PRE is relative so we can position absolute inside it
+            pre.style.position = 'relative';
+            pre.appendChild(copyBtn);
         }
     });
 });

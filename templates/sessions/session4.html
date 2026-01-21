@@ -1,0 +1,224 @@
+<section id="session4" class="content-section" style="display:none;">
+
+    <div class="section-header-wrapper">
+        <span class="section-badge">04</span>
+        <h2 class="section-title-large">Cost & Performance</h2>
+        <p class="section-subtitle">Session 5: Cost Management</p>
+    </div>
+
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-4-1">4.1 Pricing Models</a></li>
+            <li><a href="#section-4-2">4.2 Reservations</a></li>
+            <li><a href="#section-4-3">4.3 Capacity</a></li>
+            <li><a href="#section-4-4">4.4 Monitoring</a></li>
+        </ul>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-4-1">4.1 On-Demand vs Editions <a href="#session4" class="back-to-top">Top &uarr;</a>
+                </h3>
+                <p>Understanding the difference between On-Demand and Editions (Capacity-based)
+                    pricing
+                    is critical.</p>
+                <div class="concept-card">
+                    <h4>Pricing Models</h4>
+                    <ul>
+                        <li><strong>On-Demand:</strong> Pay per TB scanned. Great for flexibility.
+                        </li>
+                        <li><strong>Editions:</strong> Pay per Slot-Hour. 3 Tiers: Standard,
+                            Enterprise,
+                            Enterprise Plus.</li>
+                        <li><strong>Physical Storage Pricing:</strong> Bill based on
+                            <em>compressed</em>
+                            bytes (40-60% savings).
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Pricing Tiers</h4>
+                    <img src="{{ url_for('static', filename='images/bq_pricing_models_chart_1768817842723.png') }}"
+                        alt="Pricing Models Comparison">
+                    <p class="caption">Figure 10: BigQuery Pricing Models</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="topic-block" style="margin-top: 40px;">
+            <div class="tech-card">
+                <h4>Cost Monitoring Dashboard</h4>
+                <img src="{{ url_for('static', filename='images/cost_monitoring_dashboard_concept_1768817879703.png') }}"
+                    alt="Cost Monitoring Dashboard" style="max-height: 400px;">
+                <p class="caption">Figure 11: Monitoring Costs with Dashboards</p>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-4-2">4.2 Reservations & Commitments <a href="#session4" class="back-to-top">Top
+                        &uarr;</a></h3>
+                <p>For predictable performance and cost, enterprise workloads use <strong>Capitalized Slot
+                        Commitments</strong> (Editions) instead of On-Demand.</p>
+                <div class="concept-card">
+                    <h3 id="section-4-3">4.3 Capacity Planning (Slots) <a href="#session4" class="back-to-top">Top
+                            &uarr;</a></h3>
+                    <ul>
+                        <li><strong>Commitment:</strong> You purchase a bucket of slots (e.g., 100 slots) for a term
+                            (1 year/3 year) or flex (short-term).</li>
+                        <li><strong>Reservations:</strong> You carve that bucket into pools (e.g., "Prod" gets 80,
+                            "Test" gets 20).</li>
+                        <li><strong>Assignments:</strong> You attach Google Cloud Projects, Folders, or Organizations to
+                            a specific Reservation.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #F4B400;">
+                    <h4 style="color: #F4B400;">Efficiency Features</h4>
+                    <ul>
+                        <li><strong>Fair Scheduling:</strong> Within a reservation, slots are distributed fairly among
+                            active queries. If a query needs more and others are idle, it scales up.</li>
+                        <li><strong>Idle Slot Sharing:</strong> If the "Prod" pool is idle, "Test" queries can
+                            temporarily borrow those slots (and yield them back instantly when Prod wakes up).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Reservations & Idle Slots</h4>
+                    <img src="{{ url_for('static', filename='images/reservations_slot_sharing.png') }}"
+                        alt="Reservations and Idle Slot Sharing" class="zoomable-image">
+                    <p class="caption">Figure 12: Projects allow Idle Slots to flow between Reservations.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Capacity Monitoring</h4>
+            <pre><code class="language-sql">-- Check Slot Usage by Reservation
+SELECT
+  reservation_id,
+  period_start,
+  SUM(slot_ms) / 1000 / 60 as slot_minutes_used
+FROM
+  `region-us`.INFORMATION_SCHEMA.JOBS_TIMELINE_BY_PROJECT
+WHERE
+    period_start > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)
+GROUP BY 1, 2
+ORDER BY 2 DESC</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-4-4">4.4 Monitoring & Observability <a href="#session4" class="back-to-top">Top
+                        &uarr;</a></h3>
+                <p>Effective cost management requires visibility. BigQuery provides three layers of observability.</p>
+                <div class="concept-card">
+                    <h4>1. Admin Resource Charts</h4>
+                    <p>Real-time view of <strong>Operational Health</strong>.
+                    <ul>
+                        <li><strong>Slot Utilization:</strong> See if you are hitting capacity limits (Slot Contention).
+                        </li>
+                        <li><strong>Job Concurrency:</strong> Track how many queries are running in parallel.</li>
+                        <li><strong>Failed Jobs:</strong> Spike detection for broken pipelines.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px;">
+                    <h4>2. Jobs Explorer & Cloud Monitoring</h4>
+                    <ul>
+                        <li><strong>Jobs Explorer:</strong> Drill down into specific queries. Filter by "Bytes
+                            Billed" to find cost spikes or "Duration" to find slow queries.</li>
+                        <li><strong>Cloud Monitoring:</strong> Create custom dashboards (e.g., Looker Studio) using
+                            metrics like <code>slots/allocated</code> vs <code>slots/used</code>.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #34A853;">
+                    <h4>3. Optimization & Cleanup (Deep Dive)</h4>
+                    <p>Use <code>INFORMATION_SCHEMA</code> for granular analysis:</p>
+                    <ul>
+                        <li><strong>TABLE_STORAGE:</strong> Compare <code>ACTIVE_LOGICAL_BYTES</code> vs
+                            <code>ACTIVE_PHYSICAL_BYTES</code> to see compression savings.
+                        </li>
+                        <li><strong>JOBS_TIMELINE:</strong> Visualize concurrency slots over time to find peak hours.
+                        </li>
+                        <li><strong>RESERVATIONS:</strong> Audit capacity commitments and assignments.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Monitoring Dashboard</h4>
+                    <img src="{{ url_for('static', filename='images/monitoring_dashboard_ui.png') }}"
+                        alt="BigQuery Monitoring Dashboard" class="zoomable-image">
+                    <p class="caption">Figure 13: Operational Health Dashboard in Google Cloud Console.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Identify Slot Contention</h4>
+            <pre><code class="language-sql">-- Find queries that waited for slots
+SELECT
+  job_id,
+  creation_time,
+  total_slot_ms,
+  -- Time spent waiting for meaningful work
+  IF(total_slot_ms > 0, total_slot_ms / TIMESTAMP_DIFF(end_time, start_time, MILLISECOND), 0) as avg_slots
+FROM `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE 
+  -- Look for jobs where wait time is high relative to execution
+  job_type = 'QUERY'
+ORDER BY total_slot_ms DESC
+LIMIT 5</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Find Most Expensive Queries</h4>
+            <pre><code class="language-sql">-- Identify top 5 costliest queries in the last 7 days
+SELECT
+  job_id,
+  user_email,
+  total_bytes_billed,
+  creation_time
+FROM
+  `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
+WHERE
+  creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 7 DAY)
+ORDER BY
+  total_bytes_billed DESC
+LIMIT 5;</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Storage Optimization Analysis</h4>
+            <pre><code class="language-sql">-- Find tables with low compression ratios (Candidates for cleanup)
+SELECT
+  table_schema,
+  table_name,
+  -- Logical = Uncompressed, Physical = Compressed
+  active_logical_bytes / POWER(1024, 3) as logical_gb,
+  active_physical_bytes / POWER(1024, 3) as physical_gb,
+  -- Calculate Compression Ratio
+  SAFE_DIVIDE(active_logical_bytes, active_physical_bytes) as compression_ratio
+FROM
+  `region-us`.INFORMATION_SCHEMA.TABLE_STORAGE
+WHERE
+  active_logical_bytes > 0
+ORDER BY
+  physical_gb DESC
+LIMIT 10;</code></pre>
+        </div>
+    </div>
+</section>

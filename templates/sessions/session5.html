@@ -1,0 +1,100 @@
+<section id="session5" class="content-section" style="display:none;">
+
+    <div class="section-header-wrapper">
+        <span class="section-badge">06</span>
+        <h2 class="section-title-large">The AI Data Cloud</h2>
+        <p class="section-subtitle">Session 6: BigQuery AI</p>
+    </div>
+
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-5-1">6.1 BQML & Gemini</a></li>
+            <li><a href="#section-5-3">6.2 GenAI Journey</a></li>
+        </ul>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-5-1">6.1 BigQuery ML & Gemini <a href="#session5" class="back-to-top">Top &uarr;</a>
+                </h3>
+                <p>BigQuery is now an AI platform. BQML democratizes ML by letting analysts look like
+                    Data
+                    scientists using only SQL.</p>
+                <div class="concept-card">
+                    <h4>AI Capabilities</h4>
+                    <ul>
+                        <li><strong>Built-in Models:</strong> K-Means, Linear Regression (run inside BQ
+                            slots).</li>
+                        <li><strong>Remote Models:</strong> Call Vertex AI Foundation Models (Gemini 1.5
+                            Pro) for GenAI tasks.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>SQL-to-AI Bridge</h4>
+                    <img src="{{ url_for('static', filename='images/bqml_gemini_concept_1768817858934.png') }}"
+                        alt="BQML and Gemini Concept">
+                    <p class="caption">Figure 12: SQL-to-AI Workflow</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: BQML (Sentiment Analysis)</h4>
+            <pre><code class="language-sql">-- Call a remote Gemini model to analyze sentiment (Requires Model Creation first)
+-- This query assumes you have created a connection to Vertex AI
+SELECT
+    title,
+    ML.GENERATE_TEXT(
+        MODEL `my_project.my_dataset.gemini_model`, -- Replace with your model
+        CONCAT('Is this title positive or negative? ', title),
+        STRUCT(0.5 AS temperature)
+    ) AS sentiment_analysis
+FROM `bigquery-public-data.hacker_news.stories`
+LIMIT 5;</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Create Model</h4>
+            <pre><code class="language-sql">-- Create a K-Means model to cluster London Cycle Stations
+CREATE OR REPLACE MODEL `my_project.my_dataset.london_station_clusters`
+OPTIONS(model_type='kmeans', num_clusters=4) AS
+SELECT
+    latitude,
+    longitude
+FROM
+    `bigquery-public-data.london_bicycles.cycle_stations`;</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-5-3">6.2 GenAI User Journey <a href="#session5" class="back-to-top">Top &uarr;</a></h3>
+                <p>Building a GenAI app in BigQuery involves connecting unstructured data to LLMs.</p>
+                <div class="concept-card">
+                    <h4>The "RAG" Pipeline</h4>
+                    <ol>
+                        <li><strong>Ingest:</strong> PDFs/Images land in GCS.</li>
+                        <li><strong>Table:</strong> Object Table makes them visible to SQL.</li>
+                        <li><strong>Process:</strong> Remote Function (Cloud Run) extracts text.</li>
+                        <li><strong>Embed:</strong> Gemini generates embeddings.</li>
+                        <li><strong>Search:</strong> Vector Search finds relevant context for user
+                            queries.</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>End-to-End Flow</h4>
+                    <img src="{{ url_for('static', filename='images/genai_journey_flow_1768826457332.png') }}"
+                        alt="GenAI Journey Flow">
+                    <p class="caption">Figure 13: Unstructured Data to Insights</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

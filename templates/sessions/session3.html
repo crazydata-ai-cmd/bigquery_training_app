@@ -1,0 +1,296 @@
+<section id="session3" class="content-section" style="display:none;">
+
+
+    <div class="section-header-wrapper">
+        <span class="section-badge">03</span>
+        <h2 class="section-title-large">Governance at Scale</h2>
+        <p class="section-subtitle">Session 4: Governance</p>
+    </div>
+
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-3-1">3.1 IAM Hierarchy</a></li>
+            <li><a href="#section-3-2">3.2 Granular Security</a></li>
+            <li><a href="#section-3-3">3.3 Advanced Privacy</a></li>
+            <li><a href="#section-3-4">3.4 Data Sharing</a></li>
+            <li><a href="#section-3-5">3.5 CI/CD & Orchestration</a></li>
+        </ul>
+    </div>
+
+    <!-- 3.1 IAM Hierarchy content remains SAME, skipping... -->
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-3-1">3.1 IAM Hierarchy <a href="#session3" class="back-to-top">Top &uarr;</a></h3>
+                <p>Security in BigQuery operates on a hierarchy of trust, moving from the
+                    Organization
+                    level down to specific Tables and Views.</p>
+                <div class="concept-card">
+                    <h4>Key Roles</h4>
+                    <ul>
+                        <li><strong>BigQuery User:</strong> Run queries, create datasets.</li>
+                        <li><strong>BigQuery Data Viewer:</strong> Read-only access.</li>
+                        <li><strong>BigQuery Data Owner:</strong> Full control.</li>
+                        <li><strong>Authorized Datasets:</strong> Share views without granting
+                            access to
+                            underlying tables.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>IAM Hierarchy</h4>
+                    <img src="{{ url_for('static', filename='images/iam_hierarchy_diagram_1768817750309.png') }}"
+                        alt="IAM Hierarchy Diagram">
+                    <p class="caption">Figure 7: GCP IAM Hierarchy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-3-2">3.2 Granular Security <a href="#session3" class="back-to-top">Top &uarr;</a></h3>
+                <div class="concept-card">
+                    <h4>Defense in Depth</h4>
+                    <ul>
+                        <li><strong>Row-Level Security:</strong> Filter rows based on user email/group using a SQL
+                            predicate (e.g., `WHERE region = 'US'`).</li>
+                        <li><strong>Column-Level Security:</strong> Use <strong>Policy Tags</strong> (Taxonomy) to
+                            restrict access to sensitive columns (e.g., SSN). Users without the "Fine-Grained Reader"
+                            role cannot query these columns.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #FBBC04;">
+                    <h4>Dynamic Data Masking</h4>
+                    <p>Instead of blocking access completely, you can <strong>mask</strong> data for certain users.
+                        Rules apply at query time:</p>
+                    <ul>
+                        <li><strong>Default Value:</strong> Returns default for type (e.g., `""`, `0`, `NULL`).</li>
+                        <li><strong>Hash (SHA256):</strong> Returns a consistent hash. Useful for JOINs without
+                            revealing raw values.</li>
+                        <li><strong>Email Mask:</strong> `user@example.com` &rarr; `XXXXX@example.com`.</li>
+                        <li><strong>Nuillify:</strong> Returns `NULL`.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Granular Security</h4>
+                    <img src="{{ url_for('static', filename='images/security_features_visual_1768817783831.png') }}"
+                        alt="Security Features">
+                    <p class="caption">Figure 8: Row-Level and Column-Level Security</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Row-Level Security</h4>
+            <pre><code class="language-sql">-- Create a row access policy on the 'stations' table
+CREATE ROW ACCESS POLICY parkland_filter
+ON `my_project.my_dataset.stations`
+GRANT TO ("group:park_rangers@example.com")
+FILTER USING (property_type = 'parkland');</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Data Masking (DDL)</h4>
+            <pre><code class="language-sql">-- Alter a column to apply a Policy Tag that enforces Masking
+-- Note: Requires a Taxonomy to be created first in Data Console
+ALTER TABLE `my_project.my_dataset.customers`
+ALTER COLUMN email 
+SET OPTIONS(
+  policy_tags = ['projects/my-project/locations/us/taxonomies/pii/policyTags/email_masked']
+);</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-3-3">3.3 Advanced Privacy & Compliance <a href="#session3" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <p>For highly sensitive data, BigQuery offers privacy-preserving analytics.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <h4>Differential Privacy</h4>
+                    <p>Allows you to share aggregate statistics while mathematically guaranteeing that no individual's
+                        contribution can be identified.</p>
+                    <ul>
+                        <li><strong>Noise Addition:</strong> Adds random noise to results to prevent re-identification.
+                        </li>
+                        <li><strong>Clamping:</strong> Limits the contribution of outliers.</li>
+                        <li><strong>Use Case:</strong> Sharing medical trial results or census data.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #34A853;">
+                    <h4>Tags (Resource Management)</h4>
+                    <p>Attach key-value pairs to resources (Datasets/Tables) for conditional IAM policies.</p>
+                    <ul>
+                        <li><strong>Scenario:</strong> Allow `Viewer` access only if `env = 'dev'`.</li>
+                        <li><strong>Cost Tracking:</strong> Allocate costs by tag in billing reports.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 24px;">
+            <h4>Code Example: Differential Privacy</h4>
+            <pre><code class="language-sql">-- Calculate average trip duration with Differential Privacy
+-- "epsilon" controls privacy loss (lower = more private, more noise)
+-- "contribution_bounds_per_group" limits one user's impact on the result
+SELECT
+  WITH DIFFERENTIAL_PRIVACY OPTIONS(epsilon=10, delta=0.01)
+  start_station_name,
+  AVG(duration_minutes, contribution_bounds_per_group=>(0, 60)) as avg_duration_safe
+FROM `my_project.my_dataset.trips_with_user_id`
+GROUP BY start_station_name
+LIMIT 5;</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-3-4">3.4 Data Sharing <a href="#session3" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <p>BigQuery enables **Zero-Copy** sharing across organizational boundaries, eliminating the need to duplicate or
+            move data.</p>
+
+        <h4 style="margin-top: 24px;">Analytics Hub</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p>A platform for exchanging data assets securely.</p>
+                    <ul>
+                        <li><strong>Exchanges:</strong> Curated collections of data and analytics assets.</li>
+                        <li><strong>Listings:</strong> The actual shared resource. Can be a **Dataset** (tables/views)
+                            or a **Pub/Sub Topic** (real-time stream).</li>
+                        <li><strong>Subscriber:</strong> Users "subscribe" to a listing, which creates a read-only
+                            linked dataset in their project.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/analytics_hub_diagram_1768913334674.png') }}"
+                        alt="Analytics Hub Architecture" class="zoomable-image">
+                    <p class="caption">Figure 9a: Analytics Hub Publisher-Subscriber Model</p>
+                </div>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 32px;">Data Clean Rooms</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <p>Collaborate with partners without revealing raw data.</p>
+                    <ul>
+                        <li><strong>Privacy-Centric:</strong> Two parties (e.g., Retailer & Advertiser) join datasets to
+                            compute aggregates (e.g., "Conversion Count") without ever seeing each other's user list.
+                        </li>
+                        <li><strong>Entity Resolution:</strong> Built-in framework to match records (like "User ID")
+                            across different providers using AI, even if IDs don't match exactly.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/data_clean_room_diagram_1768913357674.png') }}"
+                        alt="Data Clean Room Architecture" class="zoomable-image">
+                    <p class="caption">Figure 9b: Secure Data Clean Room</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-3-5">3.5 CI/CD & Orchestration <a href="#session3" class="back-to-top">Top &uarr;</a></h3>
+        <p>BigQuery now brings software engineering best practices directly to the Data Warehouse.</p>
+
+        <h4 style="margin-top: 24px;">Data Pipelines</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p>Orchestrate your SQL and Notebooks into reliable workflows.</p>
+                    <ul>
+                        <li><strong>Schedule:</strong> Run SQL queries or Python notebooks on a recurring schedule
+                            (cron).</li>
+                        <li><strong>Dependencies:</strong> Chain tasks together (e.g., "Prepare Data" SQL &rarr; "Train
+                            Model" Notebook).</li>
+                        <li><strong>Serverless:</strong> No Airflow infrastructure to manage.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/bigquery_pipelines_diagram_1768914055197.png') }}"
+                        alt="BigQuery Pipelines DAG" class="zoomable-image">
+                    <p class="caption">Figure 10a: BigQuery Data Pipeline DAG</p>
+                </div>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 32px;">Git Integration</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #34A853;">
+                    <p>Version control your BigQuery assets directly.</p>
+                    <ul>
+                        <li><strong>Repositories:</strong> Link BigQuery to GitHub or GitLab.</li>
+                        <li><strong>Workspaces:</strong> Create a persistent "dev branch" environment for editing
+                            queries and procedures without affecting production.</li>
+                        <li><strong>Diffs:</strong> Review changes before deploying.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/bq_git_integration_diagram_1768914086594.png') }}"
+                        alt="BigQuery Git Integration" class="zoomable-image">
+                    <p class="caption">Figure 10b: Git Repository & Workspace Flow</p>
+                </div>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 32px;">Dataform</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p><strong>Transformation Logic as Code.</strong> </p>
+                    <ul>
+                        <li><strong>SQLX:</strong> Modular SQL with dependency management (ref() function).</li>
+                        <li><strong>Quality Assertions:</strong> Stop pipelines if data violates rules (e.g.,
+                            `assert_unique_key`).</li>
+                        <li><strong>Compilation:</strong> Compiles your SQLX into a DAG of BigQuery views/tables.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="code-block" style="margin-top: 0;">
+                    <div class="code-header">
+                        <span class="language-label">definitions/revenue_daily.sqlx</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code class="language-sql">config {
+  type: "table",
+  description: "Daily revenue aggregation",
+  assertions: {
+    uniqueKey: ["date"],
+    nonNull: ["total_revenue"]
+  }
+}
+
+SELECT
+  date(timestamp) as date,
+  SUM(amount) as total_revenue
+FROM ${ref("raw_orders")}
+GROUP BY 1</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

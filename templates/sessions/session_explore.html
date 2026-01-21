@@ -1,0 +1,294 @@
+<section id="session_explore" class="content-section" style="display:none;">
+    <!-- Header -->
+    <div class="section-header-wrapper">
+        <span class="section-badge">03</span>
+        <h2 class="section-title-large">Explore & Analyze</h2>
+        <p class="section-subtitle">Session 3: Explore & Analyse</p>
+    </div>
+
+    <!-- Content Overview -->
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-explore-1">3.1 Use BI Tools</a></li>
+            <li><a href="#section-explore-2">3.2 Data Profiling</a></li>
+            <li><a href="#section-explore-3">3.3 Generate Data Insights</a></li>
+            <li><a href="#section-explore-4">3.4 Gemini in BigQuery</a></li>
+            <li><a href="#section-explore-5">3.5 Programmatic Analysis</a></li>
+            <li><a href="#section-explore-6">3.6 Analyse Data with Gemini CLI</a></li>
+            <li><a href="#section-explore-7">3.7 Conversational Analytics</a></li>
+            <li><a href="#section-explore-8">3.8 Data Canvas</a></li>
+        </ul>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-1">3.1 Use BI Tools <a href="#session_explore" class="back-to-top">Top &uarr;</a></h3>
+        <p>BigQuery integrates seamlessly with major Business Intelligence tools for reporting and visualization.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p><strong>BI Ecosystem</strong></p>
+                    <p>Connect your preferred tools directly to BigQuery's massive scale:</p>
+                    <ul>
+                        <li><strong>Connected Sheets:</strong> Analyze billions of rows in Google Sheets.</li>
+                        <li><strong>Looker Studio:</strong> Create free, interactive dashboards.</li>
+                        <li><strong>Tableau & PowerBI:</strong> Use native connectors for your existing ecosystem.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/bi_ecosystem_overview_1768918732447.png') }}"
+                        alt="BigQuery BI Ecosystem" class="zoomable-image">
+                    <p class="caption">Figure 3.1a: BigQuery Integration with BI Tools</p>
+                </div>
+            </div>
+        </div>
+
+        <h4 style="margin-top: 24px;">The Power of the Semantic Layer</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #4285F4;">
+                    <p><strong>Looker: Governed Data for AI</strong></p>
+                    <ul>
+                        <li><strong>Single Source of Truth:</strong> Define metrics once in LookML, use them everywhere.
+                        </li>
+                        <li><strong>Governance:</strong> Ensure consistency across dashboards, custom apps, and AI
+                            models.</li>
+                        <li><strong>Trusted Data:</strong> Feed your AI models with governed, reliable metrics.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><small><a
+                                href="https://cloud.google.com/bigquery/docs/data-analysis-tools-intro"
+                                target="_blank">View
+                                Documentation <span class="material-icons"
+                                    style="font-size: 12px;">open_in_new</span></a></small></p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/looker_semantic_layer_1768918760017.png') }}"
+                        alt="Looker Semantic Layer" class="zoomable-image">
+                    <p class="caption">Figure 3.1b: Looker Semantic Layer Overview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="topic-block">
+        <h3 id="section-explore-2">3.2 Data Profiling <a href="#session_explore" class="back-to-top">Top &uarr;</a></h3>
+        <p>Before writing a single query, you can understand the shape and quality of your data using <strong>Data
+                Profiling</strong>.</p>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #4285F4;">
+                    <p><strong>Know Your Data (Dataplex).</strong></p>
+                    <p>Scans your tables to compute statistical metadata automatically:</p>
+                    <ul>
+                        <li><strong>Completeness:</strong> Percentage of null values.</li>
+                        <li><strong>Uniqueness:</strong> Count of unique values (Cardinality).</li>
+                        <li><strong>Distribution:</strong> Min, Max, Average, and Quartiles.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><small><a
+                                href="http://docs.cloud.google.com/bigquery/docs/data-profile-scan" target="_blank">View
+                                Documentation <span class="material-icons"
+                                    style="font-size: 12px;">open_in_new</span></a></small></p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/data_profiling_ui_1768917366057.png') }}"
+                        alt="Data Profiling UI" class="zoomable-image">
+                    <p class="caption">Figure 3.1: Data Profiling Statistics</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-3">3.3 Generate Data Insights <a href="#session_explore" class="back-to-top">Top
+                &uarr;</a></h3>
+        <p>Facing the "Cold Start" problem? Let BigQuery generate the questions for you.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #34A853;">
+                    <p><strong>Automated Discovery.</strong></p>
+                    <ul>
+                        <li><strong>Auto-Generated SQL:</strong> BigQuery analyzes table metadata to generate meaningful
+                            SQL queries.</li>
+                        <li><strong>Key Patterns:</strong> Instantly find top categories, time-trends, and outliers.
+                        </li>
+                        <li><strong>Jumpstart Analysis:</strong> Use these insights as a starting point for deeper
+                            analysis in <strong>Data Canvas</strong>.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><small><a
+                                href="https://docs.cloud.google.com/bigquery/docs/data-insights" target="_blank">View
+                                Documentation <span class="material-icons"
+                                    style="font-size: 12px;">open_in_new</span></a></small></p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/data_insights_ui_1768917396516.png') }}"
+                        alt="Data Insights UI" class="zoomable-image">
+                    <p class="caption">Figure 3.2: Automated Data Insights</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-4">3.4 Gemini in BigQuery <a href="#session_explore" class="back-to-top">Top &uarr;</a>
+        </h3>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <p><strong>AI Assistant.</strong></p>
+                    <ul>
+                        <li><strong>Explain Code:</strong> "Explain this complex query in plain English".</li>
+                        <li><strong>Generate SQL:</strong> "Write a query to find top 5 products".</li>
+                        <li><strong>Fix Errors:</strong> Auto-suggest fixes for syntax errors (e.g., trailing commas).
+                        </li>
+                        <li><strong>Comments to SQL:</strong> Write <code>/* comments */</code> directly in SQL to
+                            prompt Gemini (Vibe Querying).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/gemini_analysis_concept_1768915144239.png') }}"
+                        alt="Gemini Analysis" class="zoomable-image">
+                    <p class="caption">Figure 3b: Gemini Code Assistant</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 16px;">
+            <h4>Code Example: Comments to SQL (Vibe Querying)</h4>
+            <pre><code class="language-sql">-- "Vibe Querying": Use comments to prompt Gemini within your SQL
+SELECT 
+    station_name,
+    /* calculate average duration in minutes */
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+/* group by station and order by duration desc */</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-5">3.5 Programmatic Analysis <a href="#session_explore" class="back-to-top">Top
+                &uarr;</a></h3>
+        <div class="concept-card" style="border-left-color: #EA4335;">
+            <p><strong>BigQuery DataFrames (bigframes).</strong></p>
+            <p>Use 2000+ pandas and scikit-learn APIs directly on BigQuery data <em>without</em> moving data to your
+                machine.</p>
+        </div>
+        <div class="code-example" style="margin-top: 16px;">
+            <h4>Code Example: BigQuery DataFrames (Pandas on BigQuery)</h4>
+            <pre><code class="language-python"># Use BigQuery DataFrames to process data at scale
+import bigframes.pandas as bpd
+
+# Connect to a table (no data download!)
+df = bpd.read_gbq("bigquery-public-data.usa_names.usa_1910_2013")
+
+# Use standard pandas syntax - execution happens in BigQuery engine
+top_names = df[df['year'] > 2000].groupby('name')['number'].sum().sort_values(ascending=False).head(5)
+
+# Inspect results
+print(top_names)</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-6">3.6 Analyse Data with Gemini CLI <a href="#session_explore" class="back-to-top">Top
+                &uarr;</a></h3>
+        <p>Bring the power of AI analysis directly to your terminal.</p>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p><strong>Gemini for Google Cloud CLI</strong></p>
+                    <p>Use the <code>gemini</code> command line tool to:</p>
+                    <ul>
+                        <li><strong>Generate SQL:</strong> <code>gemini bq generate "Show me sales by region"</code>
+                        </li>
+                        <li><strong>Summarize Tables:</strong> Get quick summaries of table schemas and content.</li>
+                        <li><strong>Troubleshoot:</strong> Ask Gemini to explain errors in your terminal logs.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><small><a
+                                href="https://cloud.google.com/bigquery/docs/develop-with-gemini-cli"
+                                target="_blank">View
+                                Documentation <span class="material-icons"
+                                    style="font-size: 12px;">open_in_new</span></a></small></p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/gemini_cli_terminal_1768919262588.png') }}"
+                        alt="Gemini CLI Terminal" class="zoomable-image">
+                    <p class="caption">Figure 3.6: Gemini CLI Analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-7">3.7 Conversational Analytics <a href="#session_explore" class="back-to-top">Top
+                &uarr;</a></h3>
+        <p>Build <strong>Data Agents</strong> that allow users to chat with their data using natural language.</p>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #9C27B0;">
+                    <p><strong>Data Agents</strong></p>
+                    <ul>
+                        <li><strong>Contextual Awareness:</strong> Define synonyms, important fields, and default
+                            filters.</li>
+                        <li><strong>Safe Answers:</strong> The agent validates answers based on the schema.</li>
+                        <li><strong>Multi-turn Chat:</strong> Users can ask follow-up questions to refine their
+                            analysis.</li>
+                    </ul>
+                    <p style="margin-top: 8px;"><small><a
+                                href="https://cloud.google.com/bigquery/docs/conversational-analytics"
+                                target="_blank">View
+                                Documentation <span class="material-icons"
+                                    style="font-size: 12px;">open_in_new</span></a></small></p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/conversational_analytics_chat_1768919285828.png') }}"
+                        alt="Conversational Analytics Chat" class="zoomable-image">
+                    <p class="caption">Figure 3.7: Data Agent Chat Interface</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-explore-8">3.8 Data Canvas <a href="#session_explore" class="back-to-top">Top &uarr;</a></h3>
+        <p>BigQuery offers multiple interfaces to interact with your data, starting with natural language.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <p><strong>Natural Language to SQL.</strong> </p>
+                    <ul>
+                        <li><strong>Graph Interface:</strong> Visualized flow of your analysis (finding data &rarr;
+                            querying &rarr; visualizing).</li>
+                        <li><strong>In-Context:</strong> Ask questions like "Show me sales by region" and get SQL +
+                            Charts automatically.</li>
+                        <li><strong>Joins:</strong> Canvas automatically suggests joins between tables.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/data_canvas_ui_concept_1768915014594.png') }}"
+                        alt="Data Canvas UI" class="zoomable-image">
+                    <p class="caption">Figure 3a: BigQuery Data Canvas</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

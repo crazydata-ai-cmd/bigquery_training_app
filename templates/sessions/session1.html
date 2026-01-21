@@ -1,0 +1,446 @@
+<section id="session1" class="content-section" style="display:none;">
+
+    <!-- New Header Style -->
+    <div class="section-header-wrapper">
+        <span class="section-badge">01</span>
+        <h2 class="section-title-large">The Disaggregated Engine</h2>
+        <p class="section-subtitle">Session 1: Foundation</p>
+    </div>
+
+    <!-- Content Overview -->
+    <!-- Content Overview -->
+    <div class="content-overview">
+        <h4>In this Session</h4>
+        <ul>
+            <li><a href="#section-1-1">1.1 Overview</a></li>
+            <li><a href="#section-1-2">1.2 Architecture</a></li>
+            <li><a href="#section-1-3">1.3 Storage & Billing</a></li>
+            <li><a href="#section-1-4">1.4 Table Types</a></li>
+            <li><a href="#section-1-5">1.5 Partitioning</a></li>
+            <li><a href="#section-1-6">1.6 Nested Fields</a></li>
+        </ul>
+    </div>
+
+    <!-- 1.1 Overview Split -->
+    <!-- ... (1.1 Content omitted for brevity, it remains unchanged) ... -->
+    <!-- I need to be careful with replace_file_content to not delete 1.1 and 1.2 if I start replacement early.
+         I will target the block STARTING from 1.3 replacement.
+         The previous Replace started at line 144 (approx) in the file view, or rather I replaced the TOC and then the block.
+         I will just replace the TOC first, then the content block.
+         Wait, I can do it in two chunks with multi_replace if I want, or just be precise.
+         The previous content block started at "1.3 Explore & Analyze" and went down.
+         I will replace from the TOC down to the end of where 1.7 was (which is now line ~489).
+    -->
+
+    <!-- Actually, let's just restore the TOC and the sections 1.3-1.6 (originally).  -->
+
+
+    <!-- 1.1 Overview Split -->
+    <!-- ... (1.1 Content omitted for brevity, it remains unchanged) ... -->
+    <!-- I will overwrite the whole file content from line 11 onwards to ensure structure is correct, but since replace_file_content works on chunks, I need to be careful.
+         Wait, replacing a HUGE chunk (lines 11-414) is risky if I miss something.
+         Better to Insert 1.3 and *then* renumber the rest? Or replace the whole TOC and then insert 1.3.
+         The tool allows me to replace a block.
+         I will do this in 2 steps for safety:
+         1. Update TOC.
+         2. Insert 1.3 and renumber the rest in one big block from line 195 onwards.
+    -->
+    <!-- Actually, I'll do it in one go if I can match the content.
+         Let's stick to the plan:
+         Target lines 11-20 (TOC) AND lines 195-end (The rest of the sections).
+         But `replace_file_content` takes ONE range.
+         I will use `multi_replace_file_content` to do safely.
+    -->
+
+    <!-- 1.1 Overview Split -->
+    <!-- 1.1 BigQuery Overview -->
+    <div class="content-split">
+        <div class="text-col">
+            <h3 id="section-1-1">1.1 What is BigQuery? <a href="#session1" class="back-to-top">Top &uarr;</a></h3>
+            <p><strong>BigQuery</strong> is a serverless, multi-cloud data warehouse designed for
+                business agility. It allows you to analyze petabytes of data using ANSI SQL at
+                blazing-fast speeds, with zero infrastructure to manage.</p>
+
+            <div class="concept-card">
+                <h4>Unified Data Platform</h4>
+                <p>BigQuery goes beyond a traditional warehouse by unifying key capabilities in one
+                    place:</p>
+                <ul>
+                    <li><strong>AI & ML Built-in:</strong> different from other warehouses, ML is
+                        native. Train and execute models directly with SQL using <em>BigQuery
+                            ML</em>.</li>
+                    <li><strong>Geospatial Analysis:</strong> Analyze location data efficiently with
+                        native GIS functions.</li>
+                    <li><strong>Business Intelligence:</strong> Integrate seamlessly with Looker,
+                        Tableau, and Sheets using <em>BI Engine</em>.</li>
+                </ul>
+            </div>
+
+            <!-- Moved "Why BigQuery?" Section -->
+            <div class="concept-card" style="margin-top: 24px; border-left-color: #34A853;">
+                <h4 style="color: #34A853;">Why BigQuery?</h4>
+                <ul>
+                    <li><strong>Serverless & Scalable:</strong> No servers to provision. Compute scales
+                        automatically to match your query load.</li>
+                    <li><strong>Storage & Compute Separation:</strong> These layers scale independently,
+                        allowing for cost handling and flexibility not possible in legacy databases.</li>
+                    <li><strong>Real-Time:</strong> Ingest streaming data and analyze it immediately with
+                        the Storage Write API.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column: Visual -->
+        <div class="visual-col">
+            <div class="tech-card">
+                <h4>Core Capabilities</h4>
+                <img src="{{ url_for('static', filename='images/bigquery_key_values_1768835938061.png') }}"
+                    alt="BigQuery Key Value Points">
+                <p class="caption">Figure 1.1: BigQuery Core Value Proposition</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="concept-card">
+        <h4>Key Interfaces</h4>
+        <ul>
+            <li><strong>Google Cloud Console:</strong> Visual command center with "Explorer"
+                pane and Query Editor.</li>
+            <li><strong>bq Command-line Tool:</strong> Essential for automation and scripting.
+            </li>
+            <li><strong>Client Libraries:</strong> Python, Java, Go, Node.js for application
+                integration.</li>
+        </ul>
+
+        <div style="margin-top: 16px; margin-bottom: 16px;">
+            <img src="{{ url_for('static', filename='images/gcp_console.png') }}" alt="Google Cloud Console UI"
+                class="zoomable-image" style="width: 100%; border-radius: 4px; border: 1px solid #ddd;">
+            <p class="caption">Figure 1.2: The BigQuery Console Interface</p>
+        </div>
+
+        <div class="code-example" style="margin-top: 16px;">
+            <h4>Code Example: CLI Query</h4>
+            <pre><code class="language-bash"># Run a standard SQL query via command line
+bq query --use_legacy_sql=false \
+  'SELECT name, count FROM `bigquery-public-data.usa_names.usa_1910_2013` LIMIT 5'</code></pre>
+        </div>
+
+        <div class="code-example" style="margin-top: 16px;">
+            <h4>Code Example: Python Client Library</h4>
+            <pre><code class="language-python">from google.cloud import bigquery
+
+# Construct a BigQuery client object.
+client = bigquery.Client()
+
+# Construct a query to get names from a public dataset
+query = """
+    SELECT name, sum(number) as total_people
+    FROM `bigquery-public-data.usa_names.usa_1910_2013`
+    WHERE state = 'TX'
+    GROUP BY name
+    ORDER BY total_people DESC
+    LIMIT 20
+"""
+
+# Make an API request
+query_job = client.query(query)
+
+# Wait for the job to complete (api call)
+print("The query data:")
+for row in query_job:
+    # Row values can be accessed by field name or index.
+    print(f"name: {row.name}, count: {row.total_people}")</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-1-2">1.2 The Engine Under the Hood <a href="#session1" class="back-to-top">Top &uarr;</a></h3>
+        <p>BigQuery is an orchestrated service composed of four distinct Google technologies:</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <h4>Core Components</h4>
+                    <ul>
+                        <li><strong>Compute (Dremel):</strong> Multi-tenant query execution engine.
+                            Uses a
+                            <strong>Mixer Tree</strong> architecture to aggregate results from
+                            thousands of
+                            leaf nodes (slots).
+                        </li>
+                        <li><strong>Storage (Colossus):</strong> Global distributed file system.
+                            Uses
+                            <strong>Erasure Coding</strong> to ensure durability and recovery across
+                            disks/racks.
+                        </li>
+                        <li><strong>Network (Jupiter):</strong> Petabit-scale network fabric
+                            allowing
+                            compute to read from storage at local speeds (1 Pb/sec bisection
+                            bandwidth).
+                        </li>
+                        <li><strong>Orchestrator (Borg):</strong> Cluster management system that
+                            allocates
+                            resources (slots) and handles failover.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>The "Under the Hood" Architecture</h4>
+                    <div class="arch-diagram">
+                        <!-- Node 1: Compute -->
+                        <div class="arch-node compute">
+                            <h5>Dremel (Compute)</h5>
+                            <p>Massively Parallel SQL Execution Tree</p>
+                            <div class="arch-dots">
+                                <span class="arch-dot"></span>
+                                <span class="arch-dot"></span>
+                                <span class="arch-dot"></span>
+                            </div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="arch-connector"></div>
+
+                        <!-- Node 2: Network -->
+                        <div class="arch-node network">
+                            <h5>Jupiter Network</h5>
+                            <p>Petabit-scale Shuffle</p>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="arch-connector"></div>
+
+                        <!-- Node 3: Storage -->
+                        <div class="arch-node storage">
+                            <h5>Colossus (Storage)</h5>
+                            <p>Distributed File System</p>
+                            <div class="arch-sub-box">Capacitor Format (Columnar)</div>
+                        </div>
+                    </div>
+                    <p class="caption">Figure 1: High-Level Architecture</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-1-3">1.3 Storage Physics: Capacitor <a href="#session1" class="back-to-top">Top
+                        &uarr;</a></h3>
+                <p>Unlike traditional row-oriented databases, BigQuery uses
+                    <strong>Capacitor</strong>, a proprietary columnar format.
+                </p>
+                <ul>
+                    <li><strong>I/O Efficiency:</strong> Reads only the columns requested in the
+                        query.</li>
+                    <li><strong>Compression:</strong> Uses Run-Length Encoding (RLE) and allows
+                        BigQuery to <strong>operate directly on compressed data</strong>, saving
+                        memory bandwidth.</li>
+                </ul>
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #34A853;">
+                    <h4>Billing Strategy: Logical vs. Physical</h4>
+                    <p>You can optimize costs by choosing the right billing model per dataset:</p>
+                    <ul>
+                        <li><strong>Logical (Uncompressed):</strong> The default. Includes <strong>Time Travel</strong>
+                            costs.
+                            Best for data that doesn't compress well (Active Bytes).</li>
+                        <li><strong>Physical (Compressed):</strong> Higher unit cost, but huge savings for
+                            high-compression data (JSON, Logs).
+                            <br><em>Rule of Thumb:</em> Switch to Physical if Compression Ratio > 2:1.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px;">
+                    <h4>Optimization Tip: Clustering</h4>
+                    <p>Compression isn't fixed! <strong>Clustering</strong> (sorting) your data puts similar values
+                        together, helping BigQuery's RLE algorithm.</p>
+                    <p><em>Example:</em> Sorting by `TIMESTAMP` can increase compression from ~6:1 to ~19:1.</p>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Row vs Column Storage</h4>
+                    <img src="{{ url_for('static', filename='images/columnar_vs_row_storage_1768817524354.png') }}"
+                        alt="Row vs Column Storage">
+                    <p class="caption">Figure 2: Row-Oriented vs. Column-Oriented Storage</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Check Compression Ratio</h4>
+            <pre><code class="language-sql">-- Calculate Compression Ratio to decide on Billing Model
+-- Note: Run this in a project with active tables (e.g. your local training project)
+SELECT
+  table_name,
+  -- Logical (Uncompressed) vs Physical (Compressed)
+  active_logical_bytes / POWER(1024,3) as logical_gb,
+  active_physical_bytes / POWER(1024,3) as physical_gb,
+  -- Ratio > 2 means Physical Billing is likely cheaper
+  SAFE_DIVIDE(active_logical_bytes, active_physical_bytes) as compression_ratio
+FROM
+  `region-us`.INFORMATION_SCHEMA.TABLE_STORAGE
+ORDER BY
+  compression_ratio DESC;</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-1-4">1.4 Types of Tables & Views <a href="#session1" class="back-to-top">Top &uarr;</a>
+                </h3>
+                <p>Choosing the right table type is a balance of security, performance, and
+                    location.</p>
+                <div class="concept-card">
+                    <h4>Table Strategy</h4>
+                    <ul>
+                        <li><strong>Standard Table:</strong> Native BigQuery storage. Best
+                            performance.</li>
+                        <li><strong>External Table:</strong> Reads directly from GCS/S3. Low cost,
+                            no ingestion.</li>
+                        <li><strong>BigLake Table:</strong> External table + Fine-grained Security
+                            (Row-level access).</li>
+                        <li><strong>Materialized View:</strong>
+                            <ul>
+                                <li><em>What:</em> Pre-computed aggregations maintained by BiqQuery.
+                                </li>
+                                <li><em>Why:</em> Zero-management smart cache. Accelerates queries
+                                    on base
+                                    tables automatically. Re-computes only delta changes.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Logical View:</strong>
+                            <ul>
+                                <li><em>What:</em> A saved SQL query. Zero storage cost.</li>
+                                <li><em>Why:</em> Abstraction layer. Hide complex joins or apply
+                                    security
+                                    filters (e.g., exclude PII columns) without duplicating data.
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Decision Tree</h4>
+                    <img src="{{ url_for('static', filename='images/table_types_decision_tree_updated.png') }}"
+                        alt="Table Types Decision Tree" class="zoomable-image">
+                    <p class="caption">Figure 4a: Choosing the Right Table or View Type</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 24px;">
+            <h4>Code Example: Create External Table (GCS)</h4>
+            <pre><code class="language-sql">-- Create a table that reads directly from Google Cloud Storage (CSV)
+-- No data is copied to BigQuery storage.
+CREATE OR REPLACE EXTERNAL TABLE `my_project.my_dataset.external_states`
+OPTIONS (
+  format = 'CSV',
+  uris = ['gs://cloud-samples-data/bigquery/us-states/us-states.csv']
+);</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Create Logical View</h4>
+            <pre><code class="language-sql">-- Create a Logical View to simplify querying
+CREATE OR REPLACE VIEW `my_project.my_dataset.popular_stations` AS
+SELECT 
+    start_station_name, 
+    COUNT(*) as total_trips
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+GROUP BY start_station_name
+ORDER BY total_trips DESC;</code></pre>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Create Materialized View</h4>
+            <pre><code class="language-sql">-- Create a Materialized View for performance (Smart Cache)
+-- Note: Your dataset must be in the 'US' location to query public data
+CREATE MATERIALIZED VIEW `my_project.my_dataset.mv_hourly_trips` AS
+SELECT 
+    start_station_name,
+    EXTRACT(HOUR FROM start_time) as hour_of_day,
+    COUNT(*) as trip_count
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+GROUP BY 1, 2;</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <div class="content-split">
+            <div class="text-col">
+                <h3 id="section-1-5">1.5 Table Design: Partitioning & Clustering <a href="#session1"
+                        class="back-to-top">Top &uarr;</a></h3>
+                <p>Optimizing table design is crucial for performance and cost. Two primary
+                    mechanisms govern data layout:</p>
+                <ul>
+                    <li><strong>Partitioning:</strong> Divides table into segments (e.g., by Date).
+                        BigQuery Prunes partitions to scan less data. <br><em>Limit: 4,000
+                            partitions per table.</em></li>
+                    <li><strong>Clustering:</strong> Sorts data <em>within</em> partitions to allow
+                        <strong>Block Pruning</strong>.
+                    </li>
+                </ul>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Partitioning vs. Clustering</h4>
+                    <img src="{{ url_for('static', filename='images/partitioning_clustering_visual_1768817540274.png') }}"
+                        alt="Partitioning and Clustering">
+                    <p class="caption">Figure 3: Partitioning vs. Clustering</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Optimized Table DDL</h4>
+            <pre><code class="language-sql">-- Create a copy of a public table, PARTITIONED by day
+CREATE OR REPLACE TABLE `my_project.my_dataset.trips_optimized`
+PARTITION BY DATE(start_time)
+CLUSTER BY start_station_id
+OPTIONS(
+    description="Optimized table for bike trips analysis",
+    require_partition_filter=true
+) AS
+SELECT * 
+FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
+WHERE start_time >= '2023-01-01';</code></pre>
+        </div>
+    </div>
+
+    <div class="topic-block">
+        <h3 id="section-1-6">1.6 Denormalization & Nested Fields <a href="#session1" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <p>Traditional SQL relies on expensive JOINS. BigQuery encourages
+            <strong>Denormalization</strong> using <code>STRUCT</code> and <code>ARRAY</code> types.
+        </p>
+        <div class="concept-card">
+            <h4>Benefits of Denormalization</h4>
+            <ul>
+                <li><strong>Performance:</strong> Stores child data (e.g., Line Items) physically
+                    next to parent data (Order), avoiding network shuffle.</li>
+                <li><strong>NoSQL speed, SQL power:</strong> Use <code>UNNEST()</code> to query
+                    array/nested data with standard SQL.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="code-example">
+        <h4>Code Example: Querying Nested Data (UNNEST)</h4>
+        <pre><code class="language-sql">-- Query nested Google Analytics data
+SELECT 
+  visitId,
+  h.page.pageTitle,
+  h.time
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`,
+UNNEST(hits) as h
+WHERE h.type = 'PAGE'
+LIMIT 10;</code></pre>
+    </div>
+</section>

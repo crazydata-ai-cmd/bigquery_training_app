@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BigQuery Training Workshop</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}?v=12">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -15,38 +16,56 @@
         <!-- Sidebar Navigation -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <h3>BQ Masterclass</h3>
+                <h3>BQ.MASTER</h3>
                 <button id="toggle-sidebar" class="icon-btn"><span class="material-icons">menu_open</span></button>
             </div>
 
             <ul class="nav-links">
                 <li class="nav-item active" data-target="intro">
-                    <span class="material-icons">dashboard</span>
-                    <span class="link-text">Introduction</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <span class="material-icons">dashboard</span>
+                        <span class="link-text">Introduction</span>
+                    </a>
                 </li>
 
-                <li class="section-title">Day 1</li>
+                <li class="section-title">Section 1</li>
                 <li class="nav-item" data-target="session1">
-                    <span class="material-icons">architecture</span>
-                    <span class="link-text">Session 1: Architecture</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <span class="material-icons">architecture</span>
+                        <span class="link-text">Session 1: Foundation</span>
+                    </a>
                 </li>
                 <li class="nav-item" data-target="session2">
-                    <span class="material-icons">input</span>
-                    <span class="link-text">Session 2: Data Lifecycle</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <span class="material-icons">input</span>
+                        <span class="link-text">Session 2: Data Lifecycle</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-target="session_explore">
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <span class="material-icons">explore</span>
+                        <span class="link-text">Session 3: Explore & Analyse</span>
+                    </a>
                 </li>
 
-                <li class="section-title">Day 2</li>
+                <li class="section-title">Section 2</li>
                 <li class="nav-item" data-target="session3">
-                    <span class="material-icons">security</span>
-                    <span class="link-text">Session 3: Governance</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <span class="material-icons">security</span>
+                        <span class="link-text">Session 4: Governance</span>
+                    </a>
                 </li>
                 <li class="nav-item" data-target="session4">
-                    <i class="material-icons">monetization_on</i>
-                    <span>Session 4: Cost Management</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="material-icons">monetization_on</i>
+                        <span class="link-text">Session 5: Cost Management</span>
+                    </a>
                 </li>
                 <li class="nav-item" data-target="session5">
-                    <i class="material-icons">psychology</i>
-                    <span>Session 5: AI & Future</span>
+                    <a href="#" class="nav-link" onclick="return false;">
+                        <i class="material-icons">psychology</i>
+                        <span class="link-text">Session 6: BigQuery AI</span>
+                    </a>
                 </li>
             </ul>
         </nav>
@@ -61,528 +80,14 @@
             <div id="content-display" class="content-wrapper">
                 <div class="content-container">
                     <!-- Dynamic Content Loads Here -->
-                    <section id="intro" class="content-section active">
-                        <h2>Welcome to the Workshop</h2>
-                        <p>This comprehensive 2-day workshop covers the entire BigQuery lifecycle, from architecture and
-                            ingestion to advanced security and AI integration.</p>
-
-                        <div class="illustration-container">
-                            <img src="{{ url_for('static', filename='images/workshop_roadmap_diagram_1768824718509.png') }}"
-                                alt="Workshop Learning Roadmap" class="zoomable-image">
-                            <p class="caption">Figure 1: BigQuery Technical Roadmap</p>
-                        </div>
-
-                        <div class="card">
-                            <h4>Workshop Syllabus</h4>
-                            <ul>
-                                <li><strong>Session 1: Architecture & Internals:</strong> Compute/Storage separation,
-                                    Colossus, Capacitor, and Dremel.</li>
-                                <li><strong>Session 2: Ingestion & Optimization:</strong> Batch vs Streaming, Query
-                                    lifecycle, and Slot management.</li>
-                                <li><strong>Session 3: Governance & Security:</strong> IAM Hierarchy, Data Mesh,
-                                    Column-level security, and DevOps.</li>
-                                <li><strong>Session 4: Cost Management:</strong> Pricing models (Editions), Slot
-                                    autoscaling, and Monitoring.</li>
-                                <li><strong>Session 5: AI & Future:</strong> BigQuery ML, Gemini integration, and Data
-                                    Canvas.</li>
-                            </ul>
-                        </div>
-                    </section>
-
-                    <!-- Placeholders for other sessions (to be populated) -->
-                    <section id="session1" class="content-section" style="display:none;">
-                        <h2>Session 1: Architecture & Storage</h2>
-                        <div class="topic-block">
-                            <h3>1.1 BigQuery Overview</h3>
-                            <p>BigQuery is Google Cloud's fully managed, serverless, and highly scalable data
-                                warehouse. It's designed for analytical workloads, offering lightning-fast SQL queries
-                                over petabytes of data. Its architecture is based on a disaggregated storage and
-                                compute model, allowing independent scaling of both resources.</p>
-
-                            <div class="illustration-container">
-                                <!-- Fixed Image Path: Removed the specific timestamp as it might vary, using the one found in ls if possible, OR assuming the previous one was just a bad link. 
-                                     However, since I can't guess the exact previous filename if it was missing, I'll use a specific existing one or a placeholder if I can't find it. 
-                                     The previous `ls` output didn't show `bq_overview_diagram_1768817489244.png`. It showed `bq_architecture_diagram...`. 
-                                     Wait, the user said "BigQuery Overview on the Architecture page is broken". 
-                                     The `ls` command output showed:
-                                     bq_architecture_diagram_1768817505871.png
-                                     bq_pricing_models_chart...
-                                     ...
-                                     It does NOT show `bq_overview_diagram...`. 
-                                     I should probably use `bq_architecture_diagram` for the overview or remove it if it's redundant. 
-                                     Actually, I'll just use the Architecture Diagram there as a placeholder or generate a new one? 
-                                     The user said "BigQuery Overview... is broken". 
-                                     I will replace it with the new simplified architecture diagram I just made since it fits the context of "Architecture".
-                                -->
-                                <img src="{{ url_for('static', filename='images/bq_architecture_simplified_1768819304449.png') }}"
-                                    class="zoomable-image" alt="BigQuery Architecture Simplified">
-                                <p class="caption">Figure 1: High-Level Architecture</p>
-                            </div>
-
-                            <p>BigQuery is a powerful, fully managed, highly scalable, and cost-effective cloud data
-                                warehouse for analytics. It's an
-                                elastic, serverless cloud ecosystem. Ideally suited for petabyte-scale analysis, it
-                                decouples compute and storage to offer immense scalability.</p>
-
-                            <div class="card">
-                                <h4>Key Interfaces</h4>
-                                <ul>
-                                    <li><strong>Google Cloud Console:</strong> Visual command center with "Explorer"
-                                        pane
-                                        and Query Editor.</li>
-                                    <li><strong>bq Command-line Tool:</strong> Essential for automation and scripting.
-                                    </li>
-                                    <li><strong>Client Libraries:</strong> Python, Java, Go, Node.js for application
-                                        integration.</li>
-                                </ul>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Code Example: BQ Command Line</h4>
-                                <pre><code># Run a query
-bq query --use_legacy_sql=false \
-'SELECT name, count FROM `bigquery-public-data.usa_names.usa_1910_2013`
- WHERE state = "TX"
- LIMIT 5'
-
-# Show dataset details
-bq show --format=prettyjson bigquery-public-data:usa_names
-
-# Create a new dataset
-bq mk --dataset --location=US my_new_dataset
-
-# List tables in a dataset
-bq ls bigquery-public-data:usa_names</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>1.2 The Engine Under the Hood</h3>
-                            <p>BigQuery is an orchestrated service composed of four distinct Google technologies:</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/bq_architecture_simplified_1768819304449.png') }}"
-                                    class="zoomable-image" alt="BigQuery Architecture Diagram">
-                                <p class="caption">Figure 2: The Decoupled Architecture of BigQuery (Simplified)</p>
-                            </div>
-
-                            <ul>
-                                <li><strong>Compute (Dremel):</strong> Multi-tenant query execution engine. Uses a
-                                    <strong>Mixer Tree</strong> architecture to aggregate results from thousands of leaf
-                                    nodes (slots).
-                                </li>
-                                <li><strong>Storage (Colossus):</strong> Global distributed file system. Uses
-                                    <strong>Erasure Coding</strong> to ensure durability and recovery across
-                                    disks/racks.
-                                </li>
-                                <li><strong>Network (Jupiter):</strong> Petabit-scale network fabric allowing compute to
-                                    read from storage at local speeds (1 Pb/sec bisection bandwidth).</li>
-                                <li><strong>Orchestrator (Borg):</strong> Cluster management system that allocates
-                                    resources
-                                    (slots) and handles failover.</li>
-                            </ul>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>1.3 Storage Physics: Capacitor</h3>
-                            <p>Unlike traditional row-oriented databases, BigQuery uses <strong>Capacitor</strong>, a
-                                proprietary columnar format.</p>
-                            <ul>
-                                <li><strong>I/O Efficiency:</strong> Reads only the columns requested in the query.</li>
-                                <li><strong>Compression:</strong> Uses Run-Length Encoding (RLE) and allows BigQuery to
-                                    <strong>operate directly on compressed data</strong>, saving memory bandwidth.
-                                </li>
-                            </ul>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/columnar_vs_row_storage_1768817524354.png') }}"
-                                    alt="Row vs Column Storage">
-                                <p class="caption">Figure 2: Row-Oriented vs. Column-Oriented Storage</p>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>1.4 Table Design: Partitioning & Clustering</h3>
-                            <p>Optimizing table design is crucial for performance and cost. Two primary mechanisms
-                                govern
-                                data layout:</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/partitioning_clustering_visual_1768817540274.png') }}"
-                                    alt="Partitioning and Clustering">
-                                <p class="caption">Figure 3: Partitioning vs. Clustering</p>
-                            </div>
-
-                            <ul>
-                                <li><strong>Partitioning:</strong> Divides table into segments (e.g., by Date). BigQuery
-                                    Prunes partitions to scan less data. <br><em>Limit: 4,000 partitions per table.</em>
-                                </li>
-                                <li><strong>Clustering:</strong> Sorts data <em>within</em> partitions to allow
-                                    <strong>Block Pruning</strong> (skipping specific blocks based on min/max header
-                                    values).
-                                </li>
-                            </ul>
-
-                            <div class="code-example">
-                                <h4>Code Example: Optimized Table DDL</h4>
-                                <pre><code>CREATE OR REPLACE TABLE `my_project.dataset.optimized_table`
-(
-    transaction_id INT64,
-    transaction_date DATE,
-    customer_id INT64,
-    amount FLOAT64
-)
-PARTITION BY transaction_date
-CLUSTER BY customer_id
-OPTIONS(
-    description="Optimized table for sales analysis",
-    require_partition_filter=true
-);</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>1.5 Denormalization & Nested Fields</h3>
-                            <p>Traditional SQL relies on expensive JOINS. BigQuery encourages
-                                <strong>Denormalization</strong> using <code>STRUCT</code> and <code>ARRAY</code> types.
-                            </p>
-                            <ul>
-                                <li><strong>Performance:</strong> Stores child data (e.g., Line Items) physically next
-                                    to parent data (Order), avoiding network shuffle.</li>
-                                <li><strong>NoSQL speed, SQL power:</strong> Use <code>UNNEST()</code> to query
-                                    array/nested data with standard SQL.</li>
-                            </ul>
-                        </div>
-                    </section>
-                    <section id="session2" class="content-section" style="display:none;">
-                        <h2>Session 2: Ingestion & Querying</h2>
-
-                        <div class="topic-block">
-                            <h3>2.1 Ingestion Strategies</h3>
-                            <p>Choosing the right ingestion method impacts freshness, cost, and availability. We
-                                classify
-                                them into Batch, Streaming, and Managed Transfers.</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/ingestion_methods_comparison_1768817681355.png') }}"
-                                    alt="Ingestion Methods Comparison">
-                                <p class="caption">Figure 4: Comparison of Ingestion Methods</p>
-                            </div>
-
-                            <div class="card">
-                                <h4>Batch vs. Streaming</h4>
-                                <ul>
-                                    <li><strong>Batch (Free*):</strong> Uses shared slot pool. Good for daily ETL.
-                                        <em>Recommendation: Use Avro/Parquet (self-describing, splitable) over
-                                            CSV/JSON.</em>
-                                    </li>
-                                    <li><strong>Streaming (Paid):</strong> Storage Write API. Bypasses the "Streaming
-                                        Buffer" for higher throughput and "Exactly-once" semantics.</li>
-                                </ul>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Code Example: Batch Load (CLI)</h4>
-                                <pre><code># Load a JSON file into BigQuery
-bq load \
-    --source_format=NEWLINE_DELIMITED_JSON \
-    --autodetect \
-    my_dataset.my_table \
-    ./data.json</code></pre>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Code Example: Streaming API (Python)</h4>
-                                <pre><code>from google.cloud import bigquery
-
-client = bigquery.Client()
-table_id = "my_project.my_dataset.my_table"
-
-rows_to_insert = [
-    {"name": "Phredelphia", "age": 32},
-    {"name": "Wally", "age": 16},
-]
-
-errors = client.insert_rows_json(table_id, rows_to_insert)
-if errors == []:
-    print("New rows have been added.")
-else:
-    print("Encountered errors: {}".format(errors))</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>2.2 The Life of a Query</h3>
-                            <p>Understanding the Query Execution Graph is key to performance. A query goes through
-                                Planning,
-                                Shuffle, and Execution.</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/life_of_a_query_flowchart_1768817633667.png') }}"
-                                    alt="Life of a Query">
-                                <p class="caption">Figure 5: The Life of a BigQuery Query</p>
-                            </div>
-
-                            <ul>
-                                <li><strong>Shuffle:</strong> The "Shuffle Bottleneck" occurs when the Shuffle Tier
-                                    lacks quota to exchange data between workers (e.g., massive JOINs).</li>
-                                <li><strong>Optimization:</strong>
-                                    <ul>
-                                        <li><strong>Filter Early:</strong> Reduce data <em>before</em> the JOIN.</li>
-                                        <li><strong>Broadcast Joins:</strong> Place the small table on the RIGHT side of
-                                            the JOIN to broadcast it to all larger table workers.</li>
-                                        <li><strong>Avoid Self-Joins:</strong> Use Window Functions instead.</li>
-                                    </ul>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>2.3 Slots & Concurrency</h3>
-                            <p><strong>Slots</strong> are virtual CPUs. "Slot Contention" occurs when demand exceeds
-                                capacity.</p>
-                            <ul>
-                                <li><strong>Avg Slots vs Max Slots:</strong> Query insights show if a query was limited
-                                    by available slots.</li>
-                                <li><strong>Wait Time:</strong> High "Wait" time in execution details indicates the
-                                    query was queued due to slot starvation.</li>
-                            </ul>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/slots_and_concurrency_1768817655127.png') }}"
-                                    alt="Slots and Concurrency">
-                                <p class="caption">Figure 6: Slots and Fair Scheduling</p>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Monitoring Slots</h4>
-                                <pre><code>SELECT
-  job_id,
-  total_slot_ms,
-  total_bytes_billed
-FROM
-  `region-us`.INFORMATION_SCHEMA.JOBS_BY_PROJECT
-WHERE
-  creation_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 DAY)
-ORDER BY
-  total_slot_ms DESC
-LIMIT 5</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>2.4 BI Engine</h3>
-                            <p>In-memory analysis service for high-concurrency, low-latency dashboards (e.g., Looker,
-                                Tableau). Caches "hot" data for sub-second response times.</p>
-                        </div>
-                    </section>
-                    <section id="session3" class="content-section" style="display:none;">
-                        <h2>Session 3: Governance & Security</h2>
-
-                        <div class="topic-block">
-                            <h3>3.1 IAM Hierarchy</h3>
-                            <p>Security in BigQuery operates on a hierarchy of trust, moving from the Organization level
-                                down to specific Tables and Views.</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/iam_hierarchy_diagram_1768817750309.png') }}"
-                                    alt="IAM Hierarchy Diagram">
-                                <p class="caption">Figure 7: GCP IAM Hierarchy</p>
-                            </div>
-
-                            <div class="card">
-                                <h4>Key Roles</h4>
-                                <ul>
-                                    <li><strong>BigQuery User:</strong> Run queries, create datasets (in own project).
-                                    </li>
-                                    <li><strong>BigQuery Data Viewer:</strong> Read-only access to datasets/tables.</li>
-                                    <li><strong>BigQuery Data Owner:</strong> Full control over datasets.</li>
-                                    <li><strong>Authorized Datasets:</strong> Share views without granting access to
-                                        underlying tables.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>3.2 Granular Security</h3>
-                            <p>For sensitive data (PII), dataset permissions are too coarse. BigQuery offers:</p>
-                            <ul>
-                                <li><strong>Row-Level Security:</strong> Filter rows based on user email/group.</li>
-                                <li><strong>Column-Level Security:</strong> Use <strong>Policy Tags</strong> (Data
-                                    Catalog Taxonomy) to restrict access to specific columns (e.g., SSN).</li>
-                                <li><strong>Dynamic Masking:</strong> Hash or nullify column values for unauthorized
-                                    users instead of blocking access entirely.</li>
-                            </ul>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/security_features_visual_1768817783831.png') }}"
-                                    alt="Security Features">
-                                <p class="caption">Figure 8: Row-Level and Column-Level Security</p>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Code Example: Authorized View</h4>
-                                <pre><code>-- Create a view that aggregates data, hiding individual records
-CREATE VIEW `my_dataset.regional_sales` AS
-SELECT region, SUM(amount) as total_sales
-FROM `my_dataset.raw_sales`
-GROUP BY region;
-
--- Grant access to the VIEW only, not the Table
-GRANT `roles/bigquery.dataViewer`
-ON `my_dataset.regional_sales`
-TO "user:analyst@example.com";</code></pre>
-                            </div>
-
-                            <div class="code-example">
-                                <h4>Code Example: Row-Level Security</h4>
-                                <pre><code>-- Create a row access policy
-CREATE ROW ACCESS POLICY us_filter
-ON `my_dataset.sales_table`
-GRANT TO ("group:us_sales@example.com")
-FILTER USING (region = 'US');</code></pre>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>3.3 Data Mesh Architecture</h3>
-                            <p>Moving from a centralized "Data Lake" to a decentralized "Data Mesh" allows domain teams
-                                (Marketing, Sales) to own their data products while maintaining federated governance.
-                            </p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/data_mesh_concept_1768817767426.png') }}"
-                                    alt="Data Mesh Concept">
-                                <p class="caption">Figure 9: Data Mesh Architecture</p>
-                            </div>
-
-                            <div class="topic-block">
-                                <h3>3.4 DevOps for Data (Dataform)</h3>
-                                <p>Treat data pipelines like code.</p>
-                                <ul>
-                                    <li><strong>SQLX:</strong> Modular SQL with dependency management.</li>
-                                    <li><strong>CI/CD:</strong> Git integration for version control.</li>
-                                    <li><strong>Quality:</strong> Automated Unit Tests and Assertions (e.g.,
-                                        `assert_unique_key`) to
-                                        prevent bad data.</li>
-                                </ul>
-                            </div>
-                    </section>
-                    <section id="session4" class="content-section" style="display:none;">
-                        <h2>Session 4: Cost Management</h2>
-
-                        <div class="topic-block">
-                            <h3>4.1 Cost Management & Pricing</h3>
-                            <p>Understanding the difference between On-Demand and Editions (Capacity-based) pricing is
-                                critical for financial governance.</p>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/bq_pricing_models_chart_1768817842723.png') }}"
-                                    alt="Pricing Models Comparison">
-                                <p class="caption">Figure 10: BigQuery Pricing Models</p>
-                            </div>
-
-                            <div class="illustration-container">
-                                <img src="{{ url_for('static', filename='images/cost_monitoring_dashboard_concept_1768817879703.png') }}"
-                                    alt="Cost Monitoring Dashboard">
-                                <p class="caption">Figure 11: Monitoring Costs with Dashboards</p>
-                            </div>
-
-                            <div class="card">
-                                <h4>Pricing Models</h4>
-                                <ul>
-                                    <li><strong>On-Demand:</strong> Pay per TB scanned. Great for flexibility and ad-hoc
-                                        analysis.</li>
-                                    <li><strong>Editions:</strong> Pay per Slot-Hour. 3 Tiers: Standard (Autoscaling),
-                                        Enterprise (VPC SC), Enterprise Plus (Compliance).</li>
-                                    <li><strong>Physical Storage Pricing:</strong> Bill based on <em>compressed</em>
-                                        bytes
-                                        (40-60% savings) vs. Logical bytes.</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="topic-block">
-                            <h3>4.2 Monitoring & Optimization</h3>
-                            <p>Use <code>INFORMATION_SCHEMA</code> views to identify waste.</p>
-                            <ul>
-                                <li><strong>JOBS view:</strong> Find most expensive queries by bytes billed or slot
-                                    usage.</li>
-                                <li><strong>TABLES view:</strong> Identify unused tables for deletion or archiving.</li>
-                            </ul>
-                        </div>
+                    {% include 'sessions/intro.html' %}
+                    {% include 'sessions/session1.html' %}
+                    {% include 'sessions/session2.html' %}
+                    {% include 'sessions/session_explore.html' %}
+                    {% include 'sessions/session3.html' %}
+                    {% include 'sessions/session4.html' %}
+                    {% include 'sessions/session5.html' %}
                 </div>
-                </section>
-
-                <section id="session5" class="content-section" style="display:none;">
-                    <h2>Session 5: AI & Future</h2>
-
-                    <div class="topic-block">
-                        <h3>5.1 BigQuery ML & Gemini</h3>
-                        <p>BigQuery is now an AI platform. BQML democratizes ML by letting analysts look like Data
-                            scientists using
-                            only SQL.</p>
-                        <ul>
-                            <li><strong>Built-in Models:</strong> K-Means, Linear Regression (run inside BQ slots).</li>
-                            <li><strong>Remote Models:</strong> Call Vertex AI Foundation Models (Gemini 1.5 Pro) for
-                                GenAI tasks.
-                            </li>
-                        </ul>
-
-                        <div class="illustration-container">
-                            <img src="{{ url_for('static', filename='images/bqml_gemini_concept_1768817858934.png') }}"
-                                alt="BQML and Gemini Concept">
-                            <p class="caption">Figure 12: SQL-to-AI Workflow</p>
-                        </div>
-
-                        <div class="code-example">
-                            <h4>Code Example: BQML (Sentiment Analysis)</h4>
-                            <pre><code>-- Call a remote Gemini model to analyze sentiment
-SELECT
-    review_text,
-    ML.GENERATE_TEXT(
-        MODEL `my_project.gemini_model`,
-        review_text,
-        STRUCT(0.5 AS temperature)
-    ) AS sentiment_analysis
-FROM `my_project.customer_reviews`;</code></pre>
-                        </div>
-
-                        <div class="code-example">
-                            <h4>Code Example: Create Model</h4>
-                            <pre><code>-- Create a linear regression model to predict sales
-CREATE OR REPLACE MODEL `my_dataset.sales_prediction`
-OPTIONS(model_type='LINEAR_REG') AS
-SELECT
-    amount AS label,
-    region,
-    customer_age
-FROM
-    `my_dataset.historical_sales`;</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="topic-block">
-                        <h3>5.2 Future Directions</h3>
-                        <p>The BigQuery IDE is evolving into a visual workspace.</p>
-                        <ul>
-                            <li><strong>Data Canvas:</strong> Natural language exploration with auto-generated DAGs.
-                            </li>
-                            <li><strong>Python Assistance:</strong> Gemini converts comments to Python/SQL code in
-                                real-time.</li>
-                        </ul>
-                    </div>
-
-                    <div class="topic-block">
-                        <h3>5.3 Upskilling Path</h3>
-                        <ul>
-                            <li><strong>BigQuery Sandbox:</strong> Free tier (10GB storage/month, 1TB queries/month) -
-                                no credit
-                                card required.</li>
-                            <li><strong>Certification:</strong> Google Cloud Professional Data Engineer.</li>
-                        </ul>
-                    </div>
-                </section>
             </div> <!-- End content-container -->
     </div>
     </main>
@@ -596,6 +101,11 @@ FROM
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <!-- Prism.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
 </body>
 
 </html>
