@@ -801,6 +801,50 @@ pre[class*="language-"] {
     border-radius: 50%;
 }
 
+/* Presentation Controls */
+.presentation-controls {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    z-index: 2000;
+}
+
+.nav-fab {
+    background-color: #fff;
+    color: var(--primary-color);
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-fab:hover {
+    background-color: var(--primary-color);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.nav-fab:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.nav-fab .material-icons {
+    font-size: 32px;
+}
+
+
+
 .arch-sub-box {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;

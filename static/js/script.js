@@ -43,12 +43,26 @@ document.addEventListener('DOMContentLoaded', () => {
         openBtn.classList.remove('hidden');
     }
 
+    // Set initial active section
+    const activeNavItem = document.querySelector('.nav-item.active');
+    if (activeNavItem) {
+        const targetId = activeNavItem.getAttribute('data-target');
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+            targetSection.style.display = 'block';
+            targetSection.classList.add('active');
+        }
+    }
+
     // Navigation Logic
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             // Remove active class from all
             navItems.forEach(n => n.classList.remove('active'));
-            contentSections.forEach(s => s.style.display = 'none');
+            contentSections.forEach(s => {
+                s.style.display = 'none';
+                s.classList.remove('active');
+            });
 
             // Activate clicked
             item.classList.add('active');
@@ -168,6 +182,111 @@ document.addEventListener('DOMContentLoaded', () => {
             // Make sure the PRE is relative so we can position absolute inside it
             pre.style.position = 'relative';
             pre.appendChild(copyBtn);
+        }
+    });
+    // Presentation Navigation Logic
+    const contentContainer = document.querySelector('.content-wrapper'); // The scrollable container
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+
+    const getScrollTargets = () => {
+        // Collect all logical stop points in the currently visible section
+        const activeSection = document.querySelector('.content-section.active');
+        if (!activeSection) {
+            console.warn("No active section found for scrolling");
+            return [];
+        }
+
+        // Define what constitutes a "Stop"
+        // 1. The Section Header
+        // 2. The Overview
+        // 3. Each Topic Block
+        // 4. Each H3 (Section titles)
+        // 5. Code Examples (optional, maybe too granular?) - Let's stick to H3 and Topic Blocks
+        // Expanded list to catch intro pages and cards
+        const targets = Array.from(activeSection.querySelectorAll('.section-header-wrapper, .content-overview, .topic-block, .content-split, .concept-card, h3, h4'));
+
+        // Sort by visual position (getBoundingClientRect) to handle nested offsetParents correctly
+        return targets.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+    };
+
+    const scrollToTarget = (target) => {
+        if (target) {
+            // Smooth scroll within the container
+            // Use block: 'start' to align top of element with top of container
+            // Use behavior: 'smooth'
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    if (prevBtn && nextBtn && contentContainer) {
+        console.log("Presentation controls initialized");
+        nextBtn.addEventListener('click', () => {
+            console.log("Next button clicked");
+            const targets = getScrollTargets();
+            console.log(`Found ${targets.length} targets`);
+
+            // Current scroll position of the container + a small buffer
+            const currentScroll = contentContainer.scrollTop + 20;
+
+            // Find the first target whose top is *significantly* below the current scroll
+            // Since elements are inside contentContainer, we check their offsetTop relative to the container? 
+            // offsetTop is relative to the *offsetParent*. If contentContainer is positioned, it works.
+            // If not, we might need verify. But content-wrapper is usually static. 
+            // Actually, getBoundingClientRect is safer.
+            const containerRect = contentContainer.getBoundingClientRect();
+            console.log("Container Top:", containerRect.top);
+
+            const nextTarget = targets.find(t => {
+                const rect = t.getBoundingClientRect();
+                console.log(`Check Target: ${t.tagName}.${t.className.split(' ')[0]} Top: ${rect.top}`);
+                // t is "Next" if its top is below the container's top + some threshold
+                return rect.top > (containerRect.top + 50);
+            });
+
+            if (nextTarget) {
+                console.log("Scrolling to:", nextTarget);
+                scrollToTarget(nextTarget);
+            } else {
+                console.log("No next target found");
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            console.log("Prev button clicked");
+            const targets = getScrollTargets();
+            const containerRect = contentContainer.getBoundingClientRect();
+
+            // Find the last target whose top is *above* the current view
+            // (Reverse find)
+            const prevTarget = [...targets].reverse().find(t => {
+                const rect = t.getBoundingClientRect();
+                // t is "Prev" if its top is above the container's top - some threshold
+                return rect.top < (containerRect.top - 50);
+            });
+
+            if (prevTarget) {
+                console.log("Scrolling to:", prevTarget);
+                scrollToTarget(prevTarget);
+            } else {
+                console.log("No prev target found");
+            }
+        });
+    } else {
+        console.error("Presentation controls or content container not found", { prevBtn, nextBtn, contentContainer });
+    }
+
+    // Keyboard Navigation Support
+    document.addEventListener('keydown', (e) => {
+        // Only trigger if no modifiers are pressed (like Cmd/Ctrl) to avoid conflicting with browser shortcuts
+        if (!e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault(); // Prevent default scroll
+                if (nextBtn) nextBtn.click();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault(); // Prevent default scroll
+                if (prevBtn) prevBtn.click();
+            }
         }
     });
 });
