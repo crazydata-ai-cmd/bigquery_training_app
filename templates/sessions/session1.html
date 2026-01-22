@@ -3,8 +3,8 @@
     <!-- New Header Style -->
     <div class="section-header-wrapper">
         <span class="section-badge">01</span>
-        <h2 class="section-title-large">The Disaggregated Engine</h2>
-        <p class="section-subtitle">Session 1: Foundation</p>
+        <h2 class="section-title-large">BigQuery Foundations</h2>
+        <p class="section-subtitle">Session 1: Core Concepts</p>
     </div>
 
     <!-- Content Overview -->
@@ -88,14 +88,15 @@
                         the Storage Write API.</li>
                 </ul>
             </div>
+
+
         </div>
 
-        <!-- Right Column: Visual -->
         <div class="visual-col">
             <div class="tech-card">
                 <h4>Core Capabilities</h4>
-                <img src="{{ url_for('static', filename='images/bigquery_key_values_1768835938061.png') }}"
-                    alt="BigQuery Key Value Points">
+                <img src="{{ url_for('static', filename='images/bq_overview_1.png') }}"
+                    alt="BigQuery Core Value Proposition">
                 <p class="caption">Figure 1.1: BigQuery Core Value Proposition</p>
             </div>
         </div>
@@ -154,7 +155,8 @@ for row in query_job:
     </div>
 
     <div class="topic-block">
-        <h3 id="section-1-2">1.2 The Engine Under the Hood <a href="#session1" class="back-to-top">Top &uarr;</a></h3>
+        <h3 id="section-1-2">1.2 The Engine Under the Hood <a href="#session1" class="back-to-top">Top &uarr;</a>
+        </h3>
         <p>BigQuery is an orchestrated service composed of four distinct Google technologies:</p>
 
         <div class="content-split">
@@ -243,7 +245,8 @@ for row in query_job:
                     <h4>Billing Strategy: Logical vs. Physical</h4>
                     <p>You can optimize costs by choosing the right billing model per dataset:</p>
                     <ul>
-                        <li><strong>Logical (Uncompressed):</strong> The default. Includes <strong>Time Travel</strong>
+                        <li><strong>Logical (Uncompressed):</strong> The default. Includes <strong>Time
+                                Travel</strong>
                             costs.
                             Best for data that doesn't compress well (Active Bytes).</li>
                         <li><strong>Physical (Compressed):</strong> Higher unit cost, but huge savings for
@@ -291,7 +294,8 @@ ORDER BY
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-1-4">1.4 Types of Tables & Views <a href="#session1" class="back-to-top">Top &uarr;</a>
+                <h3 id="section-1-4">1.4 Types of Tables & Views <a href="#session1" class="back-to-top">Top
+                        &uarr;</a>
                 </h3>
                 <p>Choosing the right table type is a balance of security, performance, and
                     location.</p>
@@ -412,14 +416,84 @@ SELECT *
 FROM `bigquery-public-data.austin_bikeshare.bikeshare_trips`
 WHERE start_time >= '2023-01-01';</code></pre>
         </div>
+
+        <div class="code-example" style="margin-top: 24px;">
+            <h4>🧪 Performance Lab: Speed & Cost Comparison</h4>
+            <p>Run these similar queries to see the difference in <strong>Bytes Processed</strong> (Cost) and Speed.</p>
+
+            <!-- 1. Non-Partitioned (Simulated) -->
+            <div style="margin-bottom: 16px;">
+                <p><strong>1. Non-Partitioned (Full Scan):</strong> Scans the entire table (~100 GB+).</p>
+                <pre><code class="language-sql">-- Queries the large localized Wikipedia dataset (Partitioned, but we scan ALL partitions)
+-- Simulates a non-partitioned table scan.
+SELECT title, sum(views) as total_views
+FROM `bigquery-public-data.wikipedia.pageviews_2020`
+WHERE datehour >= '2000-01-01' -- Filters nothing, force full scan
+AND wiki = 'en'
+GROUP BY title
+ORDER BY total_views DESC
+LIMIT 10;</code></pre>
+            </div>
+
+            <!-- 2. Partitioned -->
+            <div style="margin-bottom: 16px;">
+                <p><strong>2. Partitioned:</strong> Scans only specific days (~2 GB).</p>
+                <pre><code class="language-sql">-- Uses the Partition Column (datehour) to prune 99% of data.
+SELECT title, sum(views) as total_views
+FROM `bigquery-public-data.wikipedia.pageviews_2020`
+WHERE datehour BETWEEN '2020-01-01' AND '2020-01-07' -- Scans only 7 partitions (days)
+AND wiki = 'en'
+GROUP BY title
+ORDER BY total_views DESC
+LIMIT 10;</code></pre>
+            </div>
+
+            <!-- 3. Clustered -->
+            <div>
+                <p><strong>3. Clustered:</strong> Prunes blocks within partitions (Fastest).</p>
+                <pre><code class="language-sql">-- Uses Partition (datehour) AND Cluster key (wiki)
+-- 'wiki' is a cluster column, so BQ skips blocks for other languages (e.g., 'fr', 'de').
+SELECT title, sum(views) as total_views
+FROM `bigquery-public-data.wikipedia.pageviews_2020`
+WHERE datehour BETWEEN '2020-01-01' AND '2020-01-07'
+AND wiki = 'en' -- Filter on Cluster Key
+GROUP BY title
+ORDER BY total_views DESC
+LIMIT 10;</code></pre>
+            </div>
+        </div>
     </div>
 
     <div class="topic-block">
-        <h3 id="section-1-6">1.6 Denormalization & Nested Fields <a href="#session1" class="back-to-top">Top &uarr;</a>
+        <h3 id="section-1-6">1.6 Denormalization & Nested Fields <a href="#session1" class="back-to-top">Top
+                &uarr;</a>
         </h3>
         <p>Traditional SQL relies on expensive JOINS. BigQuery encourages
             <strong>Denormalization</strong> using <code>STRUCT</code> and <code>ARRAY</code> types.
         </p>
+        <div class="code-example" style="margin-bottom: 24px;">
+            <h4>Code Example: Creating Denormalized Data</h4>
+            <p>Instead of separate tables (e.g., Orders and LineItems), store them together using
+                <code>ARRAY&lt;STRUCT&gt;</code>.</p>
+            <pre><code class="language-sql">-- Creating a table with Nested & Repeated fields
+CREATE OR REPLACE TABLE `my_project.my_dataset.orders_denormalized` AS
+SELECT
+    1001 AS order_id,
+    '2023-11-25' AS order_date,
+    -- STRUCT: A container for related fields (like an Object)
+    STRUCT('John Doe' as name, 'john@example.com' as email) AS customer,
+    -- ARRAY<STRUCT>: A list of objects (Nested Table)
+    [
+        STRUCT('Laptop' as product, 1200 as price, 1 as qty),
+        STRUCT('Mouse' as product, 25 as price, 2 as qty)
+    ] AS line_items
+UNION ALL
+SELECT
+    1002, '2023-11-26', 
+    STRUCT('Jane Smith', 'jane@example.com'),
+    [STRUCT('Monitor', 300, 2)];</code></pre>
+        </div>
+
         <div class="concept-card">
             <h4>Benefits of Denormalization</h4>
             <ul>

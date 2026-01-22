@@ -16,7 +16,8 @@
             <li><a href="#section-2-5">2.5 Query SQL</a></li>
             <li><a href="#section-2-6">2.6 Routines</a></li>
             <li><a href="#section-2-7">2.7 BI Engine</a></li>
-            <li><a href="#section-2-8">2.8 Optimizing Queries</a></li>
+            <li><a href="#section-2-8">2.8 JOIN Optimizations</a></li>
+            <li><a href="#section-2-9">2.9 General Optimization</a></li>
         </ul>
     </div>
 
@@ -417,13 +418,25 @@ END;</code></pre>
                                 data efficiently.</li>
                         </ul>
                     </div>
+
+                    <div class="concept-card" style="margin-top: 16px;">
+                        <h4>💸 Buying Model: Reservations</h4>
+                        <p>BI Engine is not billed by query! You purchase <strong>Dedicated Capacity</strong>.</p>
+                        <ul>
+                            <li><strong>Reservation:</strong> You reserve memory size (e.g., 100 GB).</li>
+                            <li><strong>Hourly Cost:</strong> You pay per GB/hour for the reserved usage, regardless of
+                                query count.</li>
+                            <li><strong>Flexibility:</strong> Scale capacity up/down instantly via API to match peak
+                                dashboard usage.</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="card tech-card">
-                    <h4>BI Engine High-Level Architecture</h4>
-                    <div class="illustration-container">
+                <div class="visual-col">
+                    <div class="card tech-card">
+                        <h4>BI Engine High-Level Architecture</h4>
                         <img src="{{ url_for('static', filename='images/bi_engine_architecture.png') }}"
                             alt="BI Engine Architecture Diagram" class="zoomable-image">
-                        <p class="caption">Figure 2.7: BI Engine sits between the Compute and
+                        <p class="caption">Figure 2.7a: BI Engine sits between the Compute and
                             Storage layers, intercepting queries for acceleration.</p>
                     </div>
                 </div>
@@ -458,6 +471,35 @@ END;</code></pre>
                 </div>
             </div>
 
+            <div class="content-split" style="margin-top: 32px;">
+                <div class="visual-col">
+                    <div class="tech-card">
+                        <h4>Smart Tuning Workflow</h4>
+                        <img src="{{ url_for('static', filename='images/smart_tuning_rewrite_flow_v2_1768995293574.png') }}"
+                            alt="Smart Tuning Auto-Rewrite" class="zoomable-image">
+                        <p class="caption">Figure 2.7b: Intelligent Query Rewriting</p>
+                    </div>
+                </div>
+                <div class="text-col">
+                    <div class="concept-card" style="border-left-color: #FBBC04;">
+                        <h4>Smart Tuning & Materialized Views</h4>
+                        <p>BigQuery uses metadata and AI to automatically optimize your queries.</p>
+                        <ul>
+                            <li><strong>Automatic Rewriting:</strong> If you create a Materialized View (MV) that
+                                contains pre-aggregated results, BigQuery's <strong>Smart Tuning</strong> will
+                                automatically rewrite users' queries to read from the fast MV instead of the large base
+                                table.</li>
+                            <li><strong>Transparency:</strong> Users do NOT need to change their SQL. They continue
+                                querying the raw table, but get the performance of the MV.</li>
+                            <li><strong>Freshness:</strong> MVs are automatically maintained. If the base table changes,
+                                BigQuery intelligently combines the fresh data with the MV.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+
             <div class="code-example">
                 <h4>Monitoring BI Capacity</h4>
                 <p>Use the Information Schema to track memory usage and spillover.</p>
@@ -477,9 +519,89 @@ LIMIT 10;</code></pre>
             </div>
         </div>
 
-        <!-- 2.8 Optimizing Queries -->
+        <!-- 2.8 JOIN Optimization -->
         <div class="topic-block">
-            <h3 id="section-2-8">2.8 Optimizing Queries <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <h3 id="section-2-8">2.8 JOIN Optimizations <a href="#session2" class="back-to-top">Top &uarr;</a></h3>
+            <p>Mastering JOINs is critical for performance. Poorly structured joins can cause massive data shuffling
+                (slot usage) and slow query times.</p>
+
+            <div class="content-split">
+                <div class="visual-col">
+                    <div class="tech-card">
+                        <h4>Filter Early Principle</h4>
+                        <img src="{{ url_for('static', filename='images/bq_join_optimization_visual_1768996726918.png') }}"
+                            alt="Join Optimization - Filter Early" class="zoomable-image">
+                        <p class="caption">Figure 2.8: Always Filter Before Joining</p>
+                    </div>
+                </div>
+                <div class="text-col">
+                    <div class="concept-card" style="border-left-color: #34A853;">
+                        <h4>✅ Best Practices</h4>
+                        <ul>
+                            <li><strong>Join Order:</strong> Place the <strong>largest table first</strong>. Start with
+                                the largest, followed by the smallest, then others in decreasing order.</li>
+                            <li><strong>Filtering:</strong> Filter your tables <strong>before</strong> the JOIN. This
+                                drastically reduces the data shuffled across slots.</li>
+                            <li><strong>Join Keys:</strong> Use <strong>INT64</strong> keys instead of STRING. Integer
+                                comparison is faster and cheaper.</li>
+                        </ul>
+                    </div>
+                    <div class="concept-card" style="border-left-color: #EA4335; margin-top: 16px;">
+                        <h4>❌ Anti-Patterns</h4>
+                        <ul>
+                            <li><strong>Self-Joins:</strong> Avoid joining a table to itself. Use <strong>Window
+                                    Functions</strong> (e.g., `LEAD`, `LAG`) instead.</li>
+                            <li><strong>Cross-Joins:</strong> Avoid `CROSS JOIN` (or comma joins). They produce a
+                                Cartesian product (Rows A × Rows B) and can explode costs.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-split" style="margin-top: 24px;">
+                <div class="card">
+                    <h4 style="margin-top:0;">❌ Inefficient (Late Filtering)</h4>
+                    <p style="font-size: 0.9em; color: #666;">Joins ALL questions and answers first (Heavy Shuffle),
+                        then filters result.</p>
+                    <div class="code-example" style="margin-bottom:0;">
+                        <pre><code class="language-sql">-- 1. Scan/Shuffle ALL StackOverflow posts
+SELECT 
+    q.title, 
+    a.body AS answer
+FROM `bigquery-public-data.stackoverflow.posts_questions` q
+JOIN `bigquery-public-data.stackoverflow.posts_answers` a
+    ON q.id = a.parent_id
+-- 2. Filter happens AFTER the expensive JOIN
+WHERE q.tags LIKE '%google-bigquery%';</code></pre>
+                    </div>
+                </div>
+                <div class="card">
+                    <h4 style="margin-top:0;">✅ Optimized (Early Filtering)</h4>
+                    <p style="font-size: 0.9em; color: #666;">Filters questions FIRST, reducing the join volume to a
+                        fraction.</p>
+                    <div class="code-example" style="margin-bottom:0;">
+                        <pre><code class="language-sql">-- 1. Filter Questions FIRST (CTE)
+WITH bigquery_questions AS (
+    SELECT id, title 
+    FROM `bigquery-public-data.stackoverflow.posts_questions`
+    WHERE tags LIKE '%google-bigquery%'
+)
+-- 2. Join ONLY the relevant subset
+SELECT 
+    q.title, 
+    a.body AS answer
+FROM bigquery_questions q
+JOIN `bigquery-public-data.stackoverflow.posts_answers` a
+    ON q.id = a.parent_id;</code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2.9 Optimizing Queries -->
+        <div class="topic-block">
+            <h3 id="section-2-9">2.9 General Query Optimization <a href="#session2" class="back-to-top">Top &uarr;</a>
+            </h3>
             <p>Optimizing your queries reduces data scanned and slot time, directly lowering costs and improving speed.
             </p>
 
@@ -507,7 +629,7 @@ LIMIT 10;</code></pre>
                         <h4>Best Practices</h4>
                         <img src="{{ url_for('static', filename='images/query_optimization_checklist_1768921907627.png') }}"
                             alt="Query Optimization Checklist" class="zoomable-image">
-                        <p class="caption">Figure 2.8: Query Optimization Best Practices</p>
+                        <p class="caption">Figure 2.9: Query Optimization Best Practices</p>
                     </div>
                 </div>
             </div>
@@ -519,17 +641,17 @@ LIMIT 10;</code></pre>
                         <pre><code class="language-sql">-- Scans ALL columns and ALL dates
 SELECT * 
 FROM `bigquery-public-data.github_repos.commits`
-ORDER BY committer.date DESC;</code></pre>
+ORDER BY TIMESTAMP_SECONDS(committer.date.seconds) DESC;</code></pre>
                     </div>
                 </div>
                 <div class="card">
                     <h4 style="margin-top:0;">✅ Optimized Query</h4>
                     <div class="code-example" style="margin-bottom:0;">
                         <pre><code class="language-sql">-- Scans only needed columns & filtered partition
-SELECT committer.name, committer.date
+SELECT committer.name, TIMESTAMP_SECONDS(committer.date.seconds)
 FROM `bigquery-public-data.github_repos.commits`
-WHERE date(committer.date) >= '2023-01-01' -- Partition Filter
-ORDER BY committer.date DESC
+WHERE TIMESTAMP_SECONDS(committer.date.seconds) >= '2023-01-01' -- Partition Filter
+ORDER BY TIMESTAMP_SECONDS(committer.date.seconds) DESC
 LIMIT 100; -- Limiting output</code></pre>
                     </div>
                 </div>

@@ -1,0 +1,196 @@
+<section id="appendix_powerbi" class="content-section" style="display:none;">
+
+    <div class="section-header-wrapper">
+        <span class="section-badge">APX</span>
+        <h2 class="section-title-large">BigQuery & Power BI Integration</h2>
+        <p class="section-subtitle">Deep Dive: Architecture, Security, and Optimization</p>
+    </div>
+
+    <div class="content-overview">
+        <h4>Overview</h4>
+        <p>A comprehensive guide to integrating Google BigQuery with Microsoft Power BI, focusing on enterprise
+            architecture, security convergence, and query performance optimization.</p>
+    </div>
+
+    <!-- 1. Architecture -->
+    <div class="topic-block">
+        <h3 id="apx-arch">1. Connectivity & Architecture <a href="#appendix_powerbi" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card">
+                    <h4>Connectivity Options</h4>
+                    <ul>
+                        <li><strong>Native Connector:</strong> Recommended. Optimizes Power Query (M) translation to
+                            GoogleSQL and handles OAuth.</li>
+                        <li><strong>ODBC Driver:</strong> For legacy/niche scenarios requiring granular SSL/TLS or
+                            connection string control.</li>
+                        <li><strong>On-Premises Data Gateway:</strong> Bridge required when BigQuery is protected by
+                            <strong>VPC Service Controls</strong> or Private IP. Proxies queries securely from Power BI
+                            Service (Public Azure IP) to GCP.
+                        </li>
+                        <li><strong>Latency:</strong> Cross-cloud RTT (e.g., Azure Dublin to GCP Iowa) can kill
+                            DirectQuery performance. <strong>Co-locate</strong> Power BI tenant region and BigQuery
+                            dataset region.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Hybrid Connectivity Architecture</h4>
+                    <img src="{{ url_for('static', filename='images/powerbi_bq_architecture_hybrid_v2_1768995794869.png') }}"
+                        alt="Power BI to BigQuery Architecture">
+                    <p class="caption">Figure A.1: Gateway acts as a bridge for private connectivity.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Authentication -->
+    <div class="topic-block">
+        <h3 id="apx-auth">2. Authentication & Security <a href="#appendix_powerbi" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <p>Choosing the right identity model is critical for <strong>Row-Level Security (RLS)</strong>.</p>
+
+        <div class="content-split">
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Workforce Identity Federation</h4>
+                    <img src="{{ url_for('static', filename='images/workforce_identity_federation_flow_1768995588143.png') }}"
+                        alt="Workforce Identity Federation Flow">
+                    <p class="caption">Figure A.2: Propagating User Identity to BigQuery.</p>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #EA4335;">
+                    <h4>Comparison of Methods</h4>
+                    <ul>
+                        <li><strong>OAuth (User):</strong> <span class="badge-red">Personal</span> Good for desktop
+                            analysis. Token expires. "Key Person Dependency".</li>
+                        <li><strong>Service Account (Key):</strong> <span class="badge-yellow">Operational</span> Stable
+                            for ETL. <strong>RLS Blind Spot:</strong> BigQuery sees all queries as the Service Account,
+                            bypassing native Row Access Policies.</li>
+                        <li><strong>Workforce Identity Federation:</strong> <span class="badge-green">Enterprise</span>
+                            Recommended. Bridges Entra ID to Google IAM. Enables <strong>Native RLS</strong> by passing
+                            the actual user identity to `SESSION_USER()`.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Storage Modes -->
+    <div class="topic-block">
+        <h3 id="apx-modes">3. Storage Modes & Composite Models <a href="#appendix_powerbi" class="back-to-top">Top
+                &uarr;</a></h3>
+
+        <div class="content-split">
+            <div class="text-col">
+                <h4>The "Gold Standard" Pattern</h4>
+                <p>Avoid the binary choice between Import (Fast but limited size) and DirectQuery (Slow but unlimited
+                    scale). Use <strong>Composite Models</strong>.</p>
+                <div class="concept-card" style="margin-top: 16px;">
+                    <h4>Layered Strategy</h4>
+                    <ul>
+                        <li><strong>DirectQuery Layer:</strong> Connects to the massive Fact table (Billions of rows).
+                            Handles detailed drill-downs.</li>
+                        <li><strong>Import Layer (Aggregations):</strong> A summary table (e.g., Sales by Region) stored
+                            in VertiPaq memory. Handles 90% of dashboard visual queries.</li>
+                        <li><strong>Result:</strong> Best of both worlds—Speed of Import, Scale of BigQuery.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Composite Model Architecture</h4>
+                    <img src="{{ url_for('static', filename='images/powerbi_composite_model_layers_1768995703398.png') }}"
+                        alt="Composite Model Layers">
+                    <p class="caption">Figure A.3: Combining Import Speed with DirectQuery Scale.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. BigQuery Optimization -->
+    <div class="topic-block">
+        <h3 id="apx-bq-opt">4. BigQuery Performance Tuning <a href="#appendix_powerbi" class="back-to-top">Top
+                &uarr;</a></h3>
+        <p>Optimizing the backend is the first line of defense for DirectQuery performance. The goal is to reduce
+            <strong>bytes scanned</strong> and <strong>slot usage</strong>.</p>
+
+        <div class="content-split">
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Partition Pruning Strategy</h4>
+                    <img src="{{ url_for('static', filename='images/bq_optimization_pruning_1768996355636.png') }}"
+                        alt="Partition Pruning Diagram">
+                    <p class="caption">Figure A.4: Pruning drastically reduces scan costs.</p>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card">
+                    <h4>Key Techniques</h4>
+                    <ul>
+                        <li><strong>Partitioning:</strong> Always partition large tables by a <code>DATE</code> or
+                            <code>TIMESTAMP</code> column. When Power BI filters by date (e.g., "Last 30 Days"),
+                            BigQuery only scans the relevant partitions, ignoring historical data.</li>
+                        <li><strong>Clustering:</strong> Sort data within partitions by high-cardinality columns like
+                            <code>CustomerID</code> or <code>Region</code>. This enables "Block Pruning", allowing the
+                            engine to skip data blocks that don't match the filter.</li>
+                        <li><strong>BI Engine Reservations:</strong> allocate dedicated memory for the project. BI
+                            Engine provides a vectorized, in-memory execution layer that accelerates sub-second
+                            dashboard queries.</li>
+                        <li><strong>Materialized Views (Smart Tuning):</strong> Create pre-aggregated views for common
+                            rollups (e.g., Sales by Month). BigQuery's optimizer transparently rewrites queries to
+                            effectively "read from the answer" rather than computing it from raw data.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Power BI Optimization -->
+    <div class="topic-block">
+        <h3 id="apx-pbi-opt">5. Power BI Optimization Strategies <a href="#appendix_powerbi" class="back-to-top">Top
+                &uarr;</a></h3>
+        <p>Writing efficient DAX and M is crucial to ensure that Power BI generates optimal SQL queries.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <h4>Frontend Best Practices</h4>
+                    <ul>
+                        <li><strong>Query Folding:</strong> The process where Power Query transformations are translated
+                            into native SQL.
+                            <ul>
+                                <li><em>Verify:</em> Right-click a step in Power Query and select "View Native Query".
+                                    If disabled, folding is broken.</li>
+                                <li><em>Fix:</em> Push complex logic (Regex, Parsing) to a BigQuery View instead of
+                                    doing it in M.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Referential Integrity:</strong> In Relationship settings, enable "Assume Referential
+                            Integrity". This allows Power BI to generate efficient <code>INNER JOIN</code>s instead of
+                            the default, expensive <code>LEFT OUTER JOIN</code>s.</li>
+                        <li><strong>Avoid Standard Time Intelligence:</strong> DAX functions like
+                            <code>SAMEPERIODLASTYEAR</code> often generate inefficient SQL that retrieves daily
+                            granularity. Instead, model date logic as integer keys (e.g., <code>MonthID</code>) in the
+                            warehouse.</li>
+                        <li><strong>Reduce Measure Density:</strong> Limit the number of measures in a single visual
+                            (e.g., Matrix). Each measure often spawns a separate sub-query, which can exhaust BigQuery
+                            concurrency limits.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>The Mechanics of Query Folding</h4>
+                    <img src="{{ url_for('static', filename='images/powerbi_query_folding_flow_1768996431844.png') }}"
+                        alt="Query Folding Diagram">
+                    <p class="caption">Figure A.5: Folding pushes compute to the cloud.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>

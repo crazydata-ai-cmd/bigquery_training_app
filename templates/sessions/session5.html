@@ -3,32 +3,45 @@
     <div class="section-header-wrapper">
         <span class="section-badge">06</span>
         <h2 class="section-title-large">The AI Data Cloud</h2>
-        <p class="section-subtitle">Session 6: BigQuery AI</p>
+        <p class="section-subtitle">Session 6: BigQuery AI & Machine Learning</p>
     </div>
 
     <div class="content-overview">
         <h4>In this Session</h4>
         <ul>
-            <li><a href="#section-5-1">6.1 BQML & Gemini</a></li>
-            <li><a href="#section-5-3">6.2 GenAI Journey</a></li>
+            <li><a href="#section-6-1">6.1 BigQuery ML (BQML)</a></li>
+            <li><a href="#section-6-2">6.2 Remote Models (Gemini)</a></li>
+            <li><a href="#section-6-3">6.3 Vector Search & Embeddings</a></li>
+            <li><a href="#section-6-4">6.4 GenAI User Journey (RAG)</a></li>
         </ul>
     </div>
 
+    <!-- 6.1 BQML -->
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-5-1">6.1 BigQuery ML & Gemini <a href="#session5" class="back-to-top">Top &uarr;</a>
-                </h3>
-                <p>BigQuery is now an AI platform. BQML democratizes ML by letting analysts look like
-                    Data
-                    scientists using only SQL.</p>
+                <h3 id="section-6-1">6.1 BigQuery ML (BQML) <a href="#session5" class="back-to-top">Top &uarr;</a></h3>
+                <p>Democratize Machine Learning by letting data analysts build, train, and deploy models using standard
+                    SQL.</p>
                 <div class="concept-card">
-                    <h4>AI Capabilities</h4>
+                    <h4>Key Capabilities</h4>
                     <ul>
-                        <li><strong>Built-in Models:</strong> K-Means, Linear Regression (run inside BQ
-                            slots).</li>
-                        <li><strong>Remote Models:</strong> Call Vertex AI Foundation Models (Gemini 1.5
-                            Pro) for GenAI tasks.</li>
+                        <li><strong>No Data Movement:</strong> Train models directly where your data lives.</li>
+                        <li><strong>Standard SQL:</strong> Use `CREATE MODEL` to build Regression, Classification,
+                            K-Means, and Forecasting models.</li>
+                        <li><strong>Scalability:</strong> Models run on BigQuery's petabyte-scale infrastructure.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #34A853;">
+                    <h4>Supported Models</h4>
+                    <ul>
+                        <li><strong>Internally Trained:</strong> Linear/Logistic Regression, K-Means Clustering, Matrix
+                            Factorization, PCA, Time Series (ARIMA+).</li>
+                        <li><strong>Externally Trained:</strong> Deep Neural Networks (DNN), Boosted Trees (XGBoost),
+                            Random Forest, AutoML Tables, Wide & Deep.</li>
+                        <li><strong>Remote Models:</strong> Gemini (LLMs), Vertex AI (Custom Models).</li>
+                        <li><strong>Imported Models:</strong> TensorFlow, TensorFlow Lite, ONNX, XGBoost.</li>
                     </ul>
                 </div>
             </div>
@@ -37,64 +50,212 @@
                     <h4>SQL-to-AI Bridge</h4>
                     <img src="{{ url_for('static', filename='images/bqml_gemini_concept_1768817858934.png') }}"
                         alt="BQML and Gemini Concept">
-                    <p class="caption">Figure 12: SQL-to-AI Workflow</p>
+                    <p class="caption">Figure 6.1: SQL-to-AI Workflow</p>
                 </div>
             </div>
         </div>
 
         <div class="code-example">
-            <h4>Code Example: BQML (Sentiment Analysis)</h4>
-            <pre><code class="language-sql">-- Call a remote Gemini model to analyze sentiment (Requires Model Creation first)
--- This query assumes you have created a connection to Vertex AI
-SELECT
-    title,
-    ML.GENERATE_TEXT(
-        MODEL `my_project.my_dataset.gemini_model`, -- Replace with your model
-        CONCAT('Is this title positive or negative? ', title),
-        STRUCT(0.5 AS temperature)
-    ) AS sentiment_analysis
-FROM `bigquery-public-data.hacker_news.stories`
-LIMIT 5;</code></pre>
-        </div>
-
-        <div class="code-example">
-            <h4>Code Example: Create Model</h4>
-            <pre><code class="language-sql">-- Create a K-Means model to cluster London Cycle Stations
+            <h4>Code Example: Train K-Means Model</h4>
+            <pre><code class="language-sql">-- Train a K-Means model to cluster London Cycle Stations
 CREATE OR REPLACE MODEL `my_project.my_dataset.london_station_clusters`
 OPTIONS(model_type='kmeans', num_clusters=4) AS
 SELECT
+    id as station_id,
     latitude,
     longitude
 FROM
-    `bigquery-public-data.london_bicycles.cycle_stations`;</code></pre>
+    `bigquery-public-data.london_bicycles.cycle_stations`
+WHERE latitude IS NOT NULL;</code></pre>
+        </div>
+
+        <div class="code-example" style="margin-top: 16px;">
+            <h4>Code Example: Predict (Inference)</h4>
+            <pre><code class="language-sql">-- Assign clusters to new data using ML.PREDICT
+SELECT * 
+FROM ML.PREDICT(
+    MODEL `my_project.my_dataset.london_station_clusters`,
+    (SELECT 51.5074 as latitude, 0.1278 as longitude) -- New data point
+);</code></pre>
         </div>
     </div>
 
+    <!-- 6.2 Remote Models -->
+    <div class="topic-block">
+        <h3 id="section-6-2">6.2 Remote Models & Gemini <a href="#session5" class="back-to-top">Top &uarr;</a></h3>
+        <p>Access Vertex AI Foundation Models (LLMs) directly from BigQuery to analyze unstructured data.</p>
+
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #4285F4;">
+                    <h4>Supported Models</h4>
+                    <ul>
+                        <li><strong>Gemini 3.0 Pro/Flash:</strong> Multimodal understanding (Text, Image, Audio, Video).
+                        </li>
+                        <li><strong>Claude / Mistral:</strong> Supported via Model Garden.</li>
+                        <li><strong>Text-Embedding:</strong> Generate vectors for semantic search.</li>
+                    </ul>
+                </div>
+
+                <div class="concept-card" style="margin-top: 16px; border-left-color: #FBBC04;">
+                    <h4>AI Functions</h4>
+                    <ul>
+                        <li><strong>General-purpose:</strong> `AI.GENERATE` (flexible), `AI.GENERATE_TEXT` (text).</li>
+                        <li><strong>Structured Output:</strong> `AI.GENERATE_TABLE`, `AI.GENERATE_{BOOL|DOUBLE|INT}`.
+                        </li>
+                        <li><strong>Embeddings:</strong> `AI.EMBED` (text/image), `AI.GENERATE_EMBEDDING`.</li>
+                        <li><strong>Managed:</strong> `AI.IF` (filter), `AI.SCORE` (rate), `AI.CLASSIFY` (categorize).
+                        </li>
+                        <li><strong>Task-specific:</strong> Cloud AI APIs for Translation, Vision.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="code-block" style="margin-top:0">
+                    <div class="code-header"><span class="language-label">Setup Remote Model</span></div>
+                    <pre><code class="language-sql">-- 1. Create Connection to Vertex AI (Cloud Resource connection)
+-- 2. Create the Remote Model
+CREATE OR REPLACE MODEL `my_dataset.gemini_pro`
+REMOTE WITH CONNECTION `us.my-connection`
+OPTIONS(endpoint = 'gemini-3.0-pro');</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example" style="margin-top: 24px;">
+            <h4>Code Example: Text Generation (Inference)</h4>
+            <pre><code class="language-sql">-- Analyze sentiment of Hacker News titles
+SELECT
+    title,
+    ml_generate_text_result['candidates'][0]['content']['parts'][0]['text'] as sentiment
+FROM ML.GENERATE_TEXT(
+    MODEL `my_dataset.gemini_pro`,
+    (SELECT title, CONCAT('Classify the sentiment of this text: ', title) as prompt 
+     FROM `bigquery-public-data.hacker_news.full` 
+     WHERE title IS NOT NULL
+     LIMIT 5),
+    STRUCT(0.2 AS temperature, 100 AS max_output_tokens)
+);</code></pre>
+        </div>
+
+        <div style="margin-top: 32px;">
+            <h4>Code Example: Structured Extraction</h4>
+            <p>Use <code>AI.GENERATE_TABLE</code> to convert unstructured text into JSON/Table format.</p>
+            <div class="code-block">
+                <pre><code class="language-sql">-- Extract "Name" and "Email" from text into structured columns
+SELECT *
+FROM AI.GENERATE_TABLE(
+  MODEL `dataset.gemini_pro`,
+  (SELECT 'Contact John Doe at john@example.com' AS content),
+  STRUCT(
+    JSON '{"type": "object", "properties": {"name": {"type": "string"}, "email": {"type": "string"}}}' AS response_schema,
+    'Extract names and emails as JSON' AS prompt
+  )
+);</code></pre>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <h4>Code Example: Managed Classification</h4>
+            <p>Use <code>AI.CLASSIFY</code> for zero-shot categorization.</p>
+            <div class="code-block">
+                <pre><code class="language-sql">-- Classify customer feedback into predefined categories
+SELECT content, pred_class, probability
+FROM AI.CLASSIFY(
+  MODEL `dataset.gemini_pro`,
+  (SELECT 'The delivery was late but item is good' AS content),
+  STRUCT(
+    ['Service Issue', 'Product Quality', 'Billing'] AS labels,
+    TRUE AS multillabel
+  )
+);</code></pre>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- 6.3 Vector Search -->
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-5-3">6.2 GenAI User Journey <a href="#session5" class="back-to-top">Top &uarr;</a></h3>
-                <p>Building a GenAI app in BigQuery involves connecting unstructured data to LLMs.</p>
-                <div class="concept-card">
-                    <h4>The "RAG" Pipeline</h4>
-                    <ol>
-                        <li><strong>Ingest:</strong> PDFs/Images land in GCS.</li>
-                        <li><strong>Table:</strong> Object Table makes them visible to SQL.</li>
-                        <li><strong>Process:</strong> Remote Function (Cloud Run) extracts text.</li>
-                        <li><strong>Embed:</strong> Gemini generates embeddings.</li>
-                        <li><strong>Search:</strong> Vector Search finds relevant context for user
-                            queries.</li>
-                    </ol>
+                <h3 id="section-6-3">6.3 Vector Search & Embeddings <a href="#session5" class="back-to-top">Top
+                        &uarr;</a></h3>
+                <p>Power semantic search by converting text into numerical vectors.</p>
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <h4>Key Concepts</h4>
+                    <ul>
+                        <li><strong>Embeddings:</strong> High-dimensional vectors representing meaning. "King" and
+                            "Queen" are close in vector space.</li>
+                        <li><strong>Vector Index:</strong> Specialized index (IVF) for fast approximate nearest neighbor
+                            search.</li>
+                        <li><strong>VECTOR_SEARCH:</strong> SQL function to find most similar items.</li>
+                    </ul>
                 </div>
             </div>
             <div class="visual-col">
                 <div class="tech-card">
-                    <h4>End-to-End Flow</h4>
-                    <img src="{{ url_for('static', filename='images/genai_journey_flow_1768826457332.png') }}"
-                        alt="GenAI Journey Flow">
-                    <p class="caption">Figure 13: Unstructured Data to Insights</p>
+                    <h4>Vector Space Concept</h4>
+                    <img src="{{ url_for('static', filename='images/vector_search_concepts_1768988174414.png') }}"
+                        alt="Vector Search Concepts" class="zoomable-image">
+                    <p class="caption">Figure 6.2: Semantic Similarity in Vector Space</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>Code Example: Generate Embeddings & Search</h4>
+            <pre><code class="language-sql">-- 1. Generate Embedding for a user query
+WITH query_embedding AS (
+    SELECT ml_generate_embedding_result as vector
+    FROM ML.GENERATE_EMBEDDING(
+        MODEL `my_dataset.embedding_model`,
+        (SELECT 'How do I optimize BigQuery costs?' as content)
+    )
+)
+-- 2. Search for nearest neighbors in your documentation table
+SELECT 
+    base.content,
+    distance
+FROM VECTOR_SEARCH(
+    TABLE `my_dataset.doc_embeddings`, 
+    'embedding_col', 
+    (SELECT vector FROM query_embedding),
+    top_k => 5
+);</code></pre>
+        </div>
+    </div>
+
+    <!-- 6.4 GenAI Journey (RAG) -->
+    <div class="topic-block">
+        <h3 id="section-6-4">6.4 End-to-End GenAI Journey (RAG) <a href="#session5" class="back-to-top">Top &uarr;</a>
+        </h3>
+        <p>Combining Retrieval (Vector Search) with Generation (LLMs) creates groundable AI applications.</p>
+
+        <div class="content-split">
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>RAG Architecture</h4>
+                    <img src="{{ url_for('static', filename='images/rag_architecture_flow_1768988328446.png') }}"
+                        alt="RAG Architecture Flow" class="zoomable-image">
+                    <p class="caption">Figure 6.3: Retrieval Augmented Generation Flow</p>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #34A853;">
+                    <h4>The Workflow</h4>
+                    <ol>
+                        <li><strong>Ingest & Embed:</strong> Store business data in BigQuery and generate embeddings.
+                        </li>
+                        <li><strong>Retrieve:</strong> When a user asks a question, find the most relevant data chunks
+                            using Vector Search.</li>
+                        <li><strong>Augment:</strong> Pass the relevant data + user question to Gemini as "Context".
+                        </li>
+                        <li><strong>Generate:</strong> Gemini answers the question using <em>only</em> your trusted
+                            data.</li>
+                    </ol>
                 </div>
             </div>
         </div>
     </div>
+
 </section>

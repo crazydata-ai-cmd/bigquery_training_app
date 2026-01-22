@@ -1,7 +1,7 @@
 <section id="session4" class="content-section" style="display:none;">
 
     <div class="section-header-wrapper">
-        <span class="section-badge">04</span>
+        <span class="section-badge">05</span>
         <h2 class="section-title-large">Cost & Performance</h2>
         <p class="section-subtitle">Session 5: Cost Management</p>
     </div>
@@ -9,17 +9,19 @@
     <div class="content-overview">
         <h4>In this Session</h4>
         <ul>
-            <li><a href="#section-4-1">4.1 Pricing Models</a></li>
-            <li><a href="#section-4-2">4.2 Reservations</a></li>
-            <li><a href="#section-4-3">4.3 Capacity</a></li>
-            <li><a href="#section-4-4">4.4 Monitoring</a></li>
+            <li><a href="#section-5-1">5.1 Pricing Models</a></li>
+            <li><a href="#section-5-2">5.2 Reservations & Capacity</a></li>
+            <li><a href="#section-5-3">5.3 Monitoring</a></li>
+            <li><a href="#section-5-4">5.4 Query Cost Controls</a></li>
+            <li><a href="#section-5-5">5.5 Storage Optimization</a></li>
+            <li><a href="#section-5-6">5.6 Checklist</a></li>
         </ul>
     </div>
 
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-4-1">4.1 On-Demand vs Editions <a href="#session4" class="back-to-top">Top &uarr;</a>
+                <h3 id="section-5-1">5.1 On-Demand vs Editions <a href="#session4" class="back-to-top">Top &uarr;</a>
                 </h3>
                 <p>Understanding the difference between On-Demand and Editions (Capacity-based)
                     pricing
@@ -49,14 +51,6 @@
             </div>
         </div>
 
-        <div class="topic-block" style="margin-top: 40px;">
-            <div class="tech-card">
-                <h4>Cost Monitoring Dashboard</h4>
-                <img src="{{ url_for('static', filename='images/cost_monitoring_dashboard_concept_1768817879703.png') }}"
-                    alt="Cost Monitoring Dashboard" style="max-height: 400px;">
-                <p class="caption">Figure 11: Monitoring Costs with Dashboards</p>
-            </div>
-        </div>
     </div>
 
 
@@ -64,13 +58,13 @@
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-4-2">4.2 Reservations & Commitments <a href="#session4" class="back-to-top">Top
+                <h3 id="section-5-2">5.2 Reservations & Commitments <a href="#session4" class="back-to-top">Top
                         &uarr;</a></h3>
                 <p>For predictable performance and cost, enterprise workloads use <strong>Capitalized Slot
                         Commitments</strong> (Editions) instead of On-Demand.</p>
+
                 <div class="concept-card">
-                    <h3 id="section-4-3">4.3 Capacity Planning (Slots) <a href="#session4" class="back-to-top">Top
-                            &uarr;</a></h3>
+                    <h4>Capacity Planning (Slots)</h4>
                     <ul>
                         <li><strong>Commitment:</strong> You purchase a bucket of slots (e.g., 100 slots) for a term
                             (1 year/3 year) or flex (short-term).</li>
@@ -120,7 +114,7 @@ ORDER BY 2 DESC</code></pre>
     <div class="topic-block">
         <div class="content-split">
             <div class="text-col">
-                <h3 id="section-4-4">4.4 Monitoring & Observability <a href="#session4" class="back-to-top">Top
+                <h3 id="section-5-3">5.3 Monitoring & Observability <a href="#session4" class="back-to-top">Top
                         &uarr;</a></h3>
                 <p>Effective cost management requires visibility. BigQuery provides three layers of observability.</p>
                 <div class="concept-card">
@@ -219,6 +213,92 @@ WHERE
 ORDER BY
   physical_gb DESC
 LIMIT 10;</code></pre>
+        </div>
+    </div>
+
+    <!-- 5.4 Query Costs -->
+    <div class="topic-block">
+        <h3 id="section-5-4">5.4 Control Query Costs <a href="#session4" class="back-to-top">Top &uarr;</a></h3>
+        <p>Enforce limits before users run expensive queries.</p>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #4285F4;">
+                    <h4>Best Practices</h4>
+                    <ul>
+                        <li><strong>Max Bytes Billed:</strong> Set a strict limit (e.g., 100GB) on custom quota groups.
+                            Queries exceeding this will fail instantly (no cost).</li>
+                        <li><strong>Dry Runs:</strong> Always perform a <code>--dry_run</code> to validate schema and
+                            see cost estimate.</li>
+                        <li><strong>No SELECT *:</strong> Columnar storage means you pay for every column you select. Be
+                            specific.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Query Controls</h4>
+                    <img src="{{ url_for('static', filename='images/query_control_visual_1768985824562.png') }}"
+                        alt="Query Cost Controls: Dry Run and Max Bytes Billed" class="zoomable-image">
+                    <p class="caption">Figure 15: Validating costs before execution.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="code-example">
+            <h4>UI Tip: Cost Validation</h4>
+            <p>In the BigQuery Console, "Dry Runs" are automatic. Look for the green checkmark in the top-right corner
+                of the query editor.</p>
+            <div
+                style="background: #f8f9fa; border: 1px solid #dadce0; padding: 12px 16px; border-radius: 8px; display: flex; align-items: center; gap: 12px; font-family: 'Roboto', sans-serif;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM10 17L5 12L6.41 10.59L10 13.41L17.59 5.82L19 7.23L10 17Z"
+                        fill="#34A853" />
+                </svg>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 500; color: #3c4043;">This query will process 150.5 GB when run.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5.5 Storage Optimization -->
+    <div class="topic-block">
+        <h3 id="section-5-5">5.5 Storage Optimization <a href="#session4" class="back-to-top">Top &uarr;</a></h3>
+        <p>Don't pay for data you don't need or space you can compress.</p>
+        <div class="content-split">
+            <div class="visual-col">
+                <div class="tech-card">
+                    <h4>Storage Strategy</h4>
+                    <img src="{{ url_for('static', filename='images/storage_optimization_visual_1768985639252.png') }}"
+                        alt="Storage Billing Models: Logical vs Physical" class="zoomable-image">
+                    <p class="caption">Figure 16: Physical billing saves 40-60% on compressed data.</p>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <h4>Strategies</h4>
+                    <ul>
+                        <li><strong>Physical Billing:</strong> Switch datasets with high-compression data (JSON/Logs) to
+                            Physical Billing.</li>
+                        <li><strong>Table Expiration:</strong> Set default expiration (e.g., 7 days) for sandbox
+                            datasets.</li>
+                        <li><strong>Time Travel:</strong> Reduce window from 7 days to 2 days for non-critical tables if
+                            using physical billing.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5.6 Cost Checklist (Summary) -->
+    <div class="topic-block">
+        <h3 id="section-5-6">5.6 Optimization Checklist <a href="#session4" class="back-to-top">Top &uarr;</a></h3>
+        <div class="tech-card" style="margin-bottom: 32px;">
+            <h4>Optimisation Summary</h4>
+            <img src="{{ url_for('static', filename='images/cost_optimization_checklist_1768985401639.png') }}"
+                alt="Cost Optimization Checklist" class="zoomable-image">
+            <p class="caption">Figure 14: Practical steps to reduce costs.</p>
         </div>
     </div>
 </section>

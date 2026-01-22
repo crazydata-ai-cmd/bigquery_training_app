@@ -108,6 +108,30 @@ SET OPTIONS(
         </div>
     </div>
 
+    <!-- Real-Life Use Case -->
+    <div class="concept-card" style="margin-top: 32px; background: #E8F0FE; border-color: #4285F4;">
+        <h4 style="color: #1967D2;">🛡️ Real-Life Scenario: Retail Customer 360</h4>
+        <p><strong>Goal:</strong> Secure sensitive customer data while enabling regional analysis for a global marketing
+            team.</p>
+        <div class="content-split" style="margin-bottom: 0;">
+            <div style="flex: 1;">
+                <h5>1. IAM (Broad Access)</h5>
+                <p>The <code>Marketing Analysts</code> group is granted <strong>BigQuery Data Viewer</strong> on the
+                    <code>Customer_Data</code> dataset. This lets them run queries.</p>
+            </div>
+            <div style="flex: 1;">
+                <h5>2. Row-Level (Regional Scope)</h5>
+                <p>A Row Access Policy enforces that <code>marketing_eu@example.com</code> can <strong>only</strong> see
+                    rows where <code>region = 'EU'</code>. They literally cannot see US data exists.</p>
+            </div>
+            <div style="flex: 1;">
+                <h5>3. Column-Level (PII Shield)</h5>
+                <p>The <code>email</code> and <code>phone</code> columns have a <strong>"PII_High"</strong> Policy Tag.
+                    Only the `Compliance Team` can see these values. Analysts see <code>NULL</code> or Masked data.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="topic-block">
         <h3 id="section-3-3">3.3 Advanced Privacy & Compliance <a href="#session3" class="back-to-top">Top &uarr;</a>
         </h3>
@@ -228,8 +252,30 @@ LIMIT 5;</code></pre>
             <div class="visual-col">
                 <div class="tech-card">
                     <img src="{{ url_for('static', filename='images/bigquery_pipelines_diagram_1768914055197.png') }}"
-                        alt="BigQuery Pipelines DAG" class="zoomable-image">
+                        alt="BigQuery Data Pipeline DAG" class="zoomable-image">
                     <p class="caption">Figure 10a: BigQuery Data Pipeline DAG</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-split" style="margin-top: 24px;">
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/data_engineering_agent_flow_1768987083944.png') }}"
+                        alt="Data Engineering Agent Flow" class="zoomable-image">
+                    <p class="caption">Figure 10b: AI-Driven Pipeline Generation</p>
+                </div>
+            </div>
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #FBBC04;">
+                    <h4>Data Engineering Agent</h4>
+                    <p>Build and modify pipelines using natural language.</p>
+                    <ul>
+                        <li><strong>Generate:</strong> "Create a daily pipeline to aggregate sales by region."</li>
+                        <li><strong>Edit:</strong> "Add a data quality check for null customer IDs."</li>
+                        <li><strong>Context Aware:</strong> Uses your existing tables and schemas to build correct SQL.
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -249,9 +295,9 @@ LIMIT 5;</code></pre>
             </div>
             <div class="visual-col">
                 <div class="tech-card">
-                    <img src="{{ url_for('static', filename='images/bq_git_integration_diagram_1768914086594.png') }}"
+                    <img src="{{ url_for('static', filename='images/bq_git_integration_v2_1768987429568.png') }}"
                         alt="BigQuery Git Integration" class="zoomable-image">
-                    <p class="caption">Figure 10b: Git Repository & Workspace Flow</p>
+                    <p class="caption">Figure 10c: Git Repository & Workspace Flow</p>
                 </div>
             </div>
         </div>
