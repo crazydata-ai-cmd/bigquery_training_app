@@ -104,7 +104,15 @@ FROM ML.PREDICT(
                         <li><strong>Structured Output:</strong> `AI.GENERATE_TABLE`, `AI.GENERATE_{BOOL|DOUBLE|INT}`.
                         </li>
                         <li><strong>Embeddings:</strong> `AI.EMBED` (text/image), `AI.GENERATE_EMBEDDING`.</li>
-                        <li><strong>Managed:</strong> `AI.IF` (filter), `AI.SCORE` (rate), `AI.CLASSIFY` (categorize).
+                        <li><strong>Managed:</strong> High-level abstractions for common tasks:
+                            <ul style="margin-top: 4px; font-size: 0.9em; color: #5f6368;">
+                                <li><code>AI.IF</code>: Semantic filtering (e.g., "Is this spam?"). Returns BOOLEAN.
+                                </li>
+                                <li><code>AI.CLASSIFY</code>: Categorizes text into your provided labels. Zero-shot.
+                                </li>
+                                <li><code>AI.SCORE</code>: Semantic rating (e.g., "Rate sentiment 1-5"). Returns FLOAT.
+                                </li>
+                            </ul>
                         </li>
                         <li><strong>Task-specific:</strong> Cloud AI APIs for Translation, Vision.</li>
                     </ul>

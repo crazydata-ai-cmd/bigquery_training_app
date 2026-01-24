@@ -108,29 +108,7 @@ SET OPTIONS(
         </div>
     </div>
 
-    <!-- Real-Life Use Case -->
-    <div class="concept-card" style="margin-top: 32px; background: #E8F0FE; border-color: #4285F4;">
-        <h4 style="color: #1967D2;">🛡️ Real-Life Scenario: Retail Customer 360</h4>
-        <p><strong>Goal:</strong> Secure sensitive customer data while enabling regional analysis for a global marketing
-            team.</p>
-        <div class="content-split" style="margin-bottom: 0;">
-            <div style="flex: 1;">
-                <h5>1. IAM (Broad Access)</h5>
-                <p>The <code>Marketing Analysts</code> group is granted <strong>BigQuery Data Viewer</strong> on the
-                    <code>Customer_Data</code> dataset. This lets them run queries.</p>
-            </div>
-            <div style="flex: 1;">
-                <h5>2. Row-Level (Regional Scope)</h5>
-                <p>A Row Access Policy enforces that <code>marketing_eu@example.com</code> can <strong>only</strong> see
-                    rows where <code>region = 'EU'</code>. They literally cannot see US data exists.</p>
-            </div>
-            <div style="flex: 1;">
-                <h5>3. Column-Level (PII Shield)</h5>
-                <p>The <code>email</code> and <code>phone</code> columns have a <strong>"PII_High"</strong> Policy Tag.
-                    Only the `Compliance Team` can see these values. Analysts see <code>NULL</code> or Masked data.</p>
-            </div>
-        </div>
-    </div>
+
 
     <div class="topic-block">
         <h3 id="section-3-3">3.3 Advanced Privacy & Compliance <a href="#session3" class="back-to-top">Top &uarr;</a>
@@ -175,6 +153,63 @@ SELECT
 FROM `my_project.my_dataset.trips_with_user_id`
 GROUP BY start_station_name
 LIMIT 5;</code></pre>
+        </div>
+    </div>
+
+    <!-- Testing Permissions -->
+    <div class="concept-card" style="margin-top: 32px; border-left-color: #9C27B0;">
+        <h4>Testing User & Group Permissions</h4>
+        <p>Unlike Service Accounts, you cannot directly "impersonate" a User or Group. Instead, use these tools:</p>
+        <div style="overflow-x: auto;">
+            <table class="data-table"
+                style="width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.9em;">
+                <thead style="background: #f1f3f4;">
+                    <tr>
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #dadce0;">Tool</th>
+                        <th style="padding: 8px; text-align: left; border-bottom: 2px solid #dadce0;">How It Works</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #dadce0;"><strong>Policy
+                                Troubleshooter</strong></td>
+                        <td style="padding: 8px; border-bottom: 1px solid #dadce0;">Enter an email + resource +
+                            permission. Returns "Granted" or "Denied" and explains the IAM policy binding (including
+                            group inheritance).</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border-bottom: 1px solid #dadce0;"><strong>Policy Simulator</strong>
+                        </td>
+                        <td style="padding: 8px; border-bottom: 1px solid #dadce0;">Simulate a policy change before
+                            applying it. Uses last 90 days of activity to show what access would be gained or lost.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Real-Life Use Case -->
+    <div class="concept-card" style="margin-top: 32px; background: #E8F0FE; border-color: #4285F4;">
+        <h4 style="color: #1967D2;">🛡️ Real-Life Scenario: Retail Customer 360</h4>
+        <p><strong>Goal:</strong> Secure sensitive customer data while enabling regional analysis for a global marketing
+            team.</p>
+        <div class="content-split" style="margin-bottom: 0;">
+            <div style="flex: 1;">
+                <h5>1. IAM (Broad Access)</h5>
+                <p>The <code>Marketing Analysts</code> group is granted <strong>BigQuery Data Viewer</strong> on the
+                    <code>Customer_Data</code> dataset. This lets them run queries.
+                </p>
+            </div>
+            <div style="flex: 1;">
+                <h5>2. Row-Level (Regional Scope)</h5>
+                <p>A Row Access Policy enforces that <code>marketing_eu@example.com</code> can <strong>only</strong> see
+                    rows where <code>region = 'EU'</code>. They literally cannot see US data exists.</p>
+            </div>
+            <div style="flex: 1;">
+                <h5>3. Column-Level (PII Shield)</h5>
+                <p>The <code>email</code> and <code>phone</code> columns have a <strong>"PII_High"</strong> Policy Tag.
+                    Only the `Compliance Team` can see these values. Analysts see <code>NULL</code> or Masked data.</p>
+            </div>
         </div>
     </div>
 
@@ -280,28 +315,6 @@ LIMIT 5;</code></pre>
             </div>
         </div>
 
-        <h4 style="margin-top: 32px;">Git Integration</h4>
-        <div class="content-split">
-            <div class="text-col">
-                <div class="concept-card" style="border-left-color: #34A853;">
-                    <p>Version control your BigQuery assets directly.</p>
-                    <ul>
-                        <li><strong>Repositories:</strong> Link BigQuery to GitHub or GitLab.</li>
-                        <li><strong>Workspaces:</strong> Create a persistent "dev branch" environment for editing
-                            queries and procedures without affecting production.</li>
-                        <li><strong>Diffs:</strong> Review changes before deploying.</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="visual-col">
-                <div class="tech-card">
-                    <img src="{{ url_for('static', filename='images/bq_git_integration_v2_1768987429568.png') }}"
-                        alt="BigQuery Git Integration" class="zoomable-image">
-                    <p class="caption">Figure 10c: Git Repository & Workspace Flow</p>
-                </div>
-            </div>
-        </div>
-
         <h4 style="margin-top: 32px;">Dataform</h4>
         <div class="content-split">
             <div class="text-col">
@@ -338,5 +351,29 @@ GROUP BY 1</code></pre>
                 </div>
             </div>
         </div>
+
+        <h4 style="margin-top: 32px;">Git Integration</h4>
+        <div class="content-split">
+            <div class="text-col">
+                <div class="concept-card" style="border-left-color: #34A853;">
+                    <p>Version control your BigQuery assets directly.</p>
+                    <ul>
+                        <li><strong>Repositories:</strong> Link BigQuery to GitHub or GitLab.</li>
+                        <li><strong>Workspaces:</strong> Create a persistent "dev branch" environment for editing
+                            queries and procedures without affecting production.</li>
+                        <li><strong>Diffs:</strong> Review changes before deploying.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="visual-col">
+                <div class="tech-card">
+                    <img src="{{ url_for('static', filename='images/bq_git_integration_v2_1768987429568.png') }}"
+                        alt="BigQuery Git Integration" class="zoomable-image">
+                    <p class="caption">Figure 10c: Git Repository & Workspace Flow</p>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </section>

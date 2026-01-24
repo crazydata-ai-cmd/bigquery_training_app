@@ -31,9 +31,15 @@
                     <ul>
                         <li><strong>On-Demand:</strong> Pay per TB scanned. Great for flexibility.
                         </li>
-                        <li><strong>Editions:</strong> Pay per Slot-Hour. 3 Tiers: Standard,
-                            Enterprise,
-                            Enterprise Plus.</li>
+                        <li><strong>Editions:</strong> Pay per Slot-Hour.
+                            <ul style="margin-top: 4px; margin-bottom: 8px; font-size: 0.9em; color: #5f6368;">
+                                <li><strong>Standard:</strong> Ad-hoc SQL analysis. Lowest cost.</li>
+                                <li><strong>Enterprise:</strong> Adds BigQuery ML, Materialized Views, & Governance.
+                                </li>
+                                <li><strong>Enterprise Plus:</strong> Mission-critical. Adds Disaster Recovery, CMEK, &
+                                    99.99% SLA.</li>
+                            </ul>
+                        </li>
                         <li><strong>Physical Storage Pricing:</strong> Bill based on
                             <em>compressed</em>
                             bytes (40-60% savings).
@@ -76,12 +82,20 @@
                 </div>
 
                 <div class="concept-card" style="margin-top: 16px; border-left-color: #F4B400;">
-                    <h4 style="color: #F4B400;">Efficiency Features</h4>
+                    <h4 style="color: #F4B400;">Autoscaling & Baseline</h4>
+                    <p>Modern capacity planning mixes guaranteed slots with burst capability:</p>
                     <ul>
-                        <li><strong>Fair Scheduling:</strong> Within a reservation, slots are distributed fairly among
-                            active queries. If a query needs more and others are idle, it scales up.</li>
-                        <li><strong>Idle Slot Sharing:</strong> If the "Prod" pool is idle, "Test" queries can
-                            temporarily borrow those slots (and yield them back instantly when Prod wakes up).</li>
+                        <li><strong>Baseline Slots:</strong> Minimum capacity you <em>always</em> pay for (24/7).
+                            Guaranteed availability.</li>
+                        <li><strong>Autoscaling Slots:</strong> Slots added on-demand when Baseline is full. You only
+                            pay for what you use.</li>
+                        <li><strong>Priority Order:</strong>
+                            <ol style="margin-top:4px; margin-left: -16px;">
+                                <li><strong>Baseline</strong> (Guaranteed)</li>
+                                <li><strong>Idle Slots</strong> (Borrowed from other pools)</li>
+                                <li><strong>Autoscaling</strong> (Spun up dynamically)</li>
+                            </ol>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -157,6 +171,40 @@ ORDER BY 2 DESC</code></pre>
                     <img src="{{ url_for('static', filename='images/monitoring_dashboard_ui.png') }}"
                         alt="BigQuery Monitoring Dashboard" class="zoomable-image">
                     <p class="caption">Figure 13: Operational Health Dashboard in Google Cloud Console.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="topic-block" style="margin-top: 32px;">
+            <h4>Deep Dive: INFORMATION_SCHEMA</h4>
+            <p>A standardized way to access metadata about your datasets, jobs, and tables. All data is queryable via
+                SQL.</p>
+
+            <div class="content-split">
+                <div class="text-col">
+                    <div class="concept-card" style="border-left-color: #673AB7;">
+                        <h5>📂 Resource Metadata</h5>
+                        <ul>
+                            <li><strong>SCHEMATA:</strong> List of datasets and their options (location, retention).
+                            </li>
+                            <li><strong>TABLES / VIEWS:</strong> Table definitions, creation dates, and types.</li>
+                            <li><strong>COLUMNS:</strong> Detailed schema info (names, types, descriptions).</li>
+                            <li><strong>TABLE_STORAGE:</strong> Physical vs Logical storage bytes (crucial for cost).
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="text-col">
+                    <div class="concept-card" style="border-left-color: #E91E63;">
+                        <h5>⚡ Job & Performance Metadata</h5>
+                        <ul>
+                            <li><strong>JOBS_BY_PROJECT:</strong> History of every query, load, and extract job.
+                                Includes SQL text, user email, and <strong>bytes billed</strong>.</li>
+                            <li><strong>JOBS_TIMELINE:</strong> Time-sliced metrics to see how many slots were running
+                                at any specific second.</li>
+                            <li><strong>RESERVATIONS:</strong> Details on reserved slot capacity and assignments.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
