@@ -8,33 +8,40 @@ This workshop is broken down into 6 key sessions, each covering critical aspects
 
 - **Session 1: BigQuery Foundations**
   - Architecture (Colossus, Borg, Dremel, Jupiter)
-  - Storage Formats (Capacitor) & Partitioning/Clustering
-  - Performance Tuning (Slot utilization, Shuffle)
+  - Storage Physics (Capacitor, Row vs Columnar) & Table Types
+  - Partitioning, Clustering, and Nested Fields (Structs & Arrays)
 
-- **Session 2: The SQL Dialect**
-  - Handling Nested & Repeated Data (Arrays & Structs)
-  - Advanced JOIN strategies
-  - User-Defined Functions (UDFs)
+- **Session 2: Ingestion & Query Lifecycle**
+  - Ingestion Strategies (Batch vs Streaming)
+  - Query Execution Graph & Slot Management
+  - Advanced SQL: Window Functions, UDFs, and JOIN Optimizations
+  - BI Engine & Smart Caching
 
 - **Session 3: Explore & Analyze**
-  - BI Tool Integration (Looker, Connected Sheets)
-  - Data Profiling & Insights
-  - BigQuery DataFrames (pandas/scikit-learn)
+  - BI Tool Integration & Data Profiling
+  - BigQuery DataFrames (Pandas/Scikit-learn)
+  - Gemini for BigQuery (SQL Generation, Python, CLI)
+  - Data Canvas & Conversational Analytics
 
 - **Session 4: Governance at Scale**
-  - IAM Hierarchy & Roles
-  - Granular Security (Row-Level & Column-Level)
+  - IAM Hierarchy & Granular Security (Row/Column-Level)
   - Data Sharing (Analytics Hub, Clean Rooms)
+  - CI/CD & Orchestration (Data Pipelines, Dataform, Git Integration)
 
-- **Session 5: Cost Management**
+- **Session 5: Cost & Performance Management**
   - Pricing Models (On-Demand vs Editions)
-  - Reservations & Autoscaling
-  - `INFORMATION_SCHEMA` Monitoring & Optimization
+  - Capacity Planning (Reservations, Autoscaling)
+  - Monitoring & Optimization (Information Schema, Dry Runs)
 
-- **Session 6: BigQuery AI & Machine Learning**
-  - BigQuery ML (BQML) for Regression/Classification
-  - Remote Models (Gemini Integration)
+- **Session 6: The AI Data Cloud**
+  - BigQuery ML (BQML) for Predictive Models
+  - Remote Models & Gemini 3.0 Integration
   - Vector Search & RAG Architectures
+
+- **Appendix: Power BI Integration**
+  - Connectivity Architecture (DirectQuery vs Import)
+  - Security (Workforce Identity Federation, RLS)
+  - Performance Optimization (Partitioning, BI Engine, Query Folding)
 
 ## 🚀 Setup Instructions
 
@@ -78,6 +85,7 @@ The application will start on `http://127.0.0.1:8000/`. Open this URL in your br
 
 ```
 bq_training/
+├── .gitignore              # Git ignore file
 ├── app.py                  # Main Flask application entry point
 ├── requirements.txt        # Python dependencies
 ├── static/                 # CSS, Images, and Javascript assets
@@ -86,15 +94,15 @@ bq_training/
 │   └── js/
 └── templates/              # HTML Templates for each session
     ├── index.html          # Landing page
-    ├── intro.html          # Introduction
-    ├── sessions/
-    │   ├── session1.html   # Foundations
-    │   ├── session2.html   # SQL Dialect
-    │   ├── session_explore.html # Explore & Analyze
-    │   ├── session3.html   # Governance
-    │   ├── session4.html   # Cost Management
-    │   └── session5.html   # AI & ML
-    └── appendix_powerbi.html
+    └── sessions/
+        ├── intro.html          # Introduction
+        ├── session1.html       # Foundations
+        ├── session2.html       # SQL Dialect
+        ├── session_explore.html # Explore & Analyze
+        ├── session3.html       # Governance
+        ├── session4.html       # Cost Management
+        ├── session5.html       # AI & ML
+        └── appendix_powerbi.html
 ```
 
 ## 🛠️ Technology Stack
