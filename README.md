@@ -2,6 +2,8 @@
 
 A comprehensive, interactive web application designed to teach Google BigQuery concepts, ranging from foundational architecture to advanced AI integration.
 
+![BigQuery Training Overview](bq_training_01.png)
+
 ## 📚 Curriculum Overview
 
 This workshop is broken down into 6 key sessions, each covering critical aspects of BigQuery:
@@ -22,6 +24,8 @@ This workshop is broken down into 6 key sessions, each covering critical aspects
   - BigQuery DataFrames (Pandas/Scikit-learn)
   - Gemini for BigQuery (SQL Generation, Python, CLI)
   - Data Canvas & Conversational Analytics
+
+  ![Explore & Analyze](bq_training_02.png)
 
 - **Session 4: Governance at Scale**
   - IAM Hierarchy & Granular Security (Row/Column-Level)
